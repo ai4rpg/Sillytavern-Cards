@@ -8,12 +8,22 @@
       </div>
       <div id="hud-phase" class="hud-phase">{{ _.get(statData, 'user.current_phase', '未知阶段') }}</div>
     </div>
-    <div class="hud-grid" style="margin-top:0;">
+    <div class="hud-grid" style="margin-top: 0">
       <div class="hud-block">
         <h3 class="hud-block-title">[ 案件信息 // Case Info ]</h3>
-        <div class="hud-data-item"><span class="hud-label">当前案件:</span><span class="hud-value">{{ _.get(statData, 'world.current_case.case_name', '无') }}</span></div>
-        <div class="hud-data-item"><span class="hud-label">地点:</span><span class="hud-value hud-location-text">{{ _.get(statData, 'world.current_case.case_location', '未知地点') }}</span></div>
-        <div class="hud-data-item"><span class="hud-label">等级:</span><span class="hud-value hud-case-level">{{ caseLevelText }}</span></div>
+        <div class="hud-data-item">
+          <span class="hud-label">当前案件:</span
+          ><span class="hud-value">{{ _.get(statData, 'world.current_case.case_name', '无') }}</span>
+        </div>
+        <div class="hud-data-item">
+          <span class="hud-label">地点:</span
+          ><span class="hud-value hud-location-text">{{
+            _.get(statData, 'world.current_case.case_location', '未知地点')
+          }}</span>
+        </div>
+        <div class="hud-data-item">
+          <span class="hud-label">等级:</span><span class="hud-value hud-case-level">{{ caseLevelText }}</span>
+        </div>
       </div>
       <div class="hud-block">
         <h3 class="hud-block-title">[ 侦探状态 // Detective ]</h3>
@@ -24,25 +34,40 @@
         </div>
       </div>
     </div>
-    <div class="hud-block" style="margin-top: 15px;">
-      <h3 class="hud-block-title" style="color: var(--erotic-pink);">[ 失控值 // Reality Distortion ]</h3>
+    <div class="hud-block" style="margin-top: 15px">
+      <h3 class="hud-block-title" style="color: var(--erotic-pink)">[ 失控值 // Reality Distortion ]</h3>
       <div class="hud-gauge-container">
         <progress :value="_.get(statData, 'world.current_case.out_of_control', 0)" max="100"></progress>
         <div class="hud-gauge-text">{{ _.get(statData, 'world.current_case.out_of_control', 0) }} / 100</div>
       </div>
     </div>
-    <div class="hud-grid" style="margin-top: 15px;">
+    <div class="hud-grid" style="margin-top: 15px">
       <div class="hud-block">
         <h3 class="hud-block-title">[ 特殊能力 // Abilities ]</h3>
         <div class="hud-list">
           <template v-if="specialAbilities.length > 0">
-            <div v-for="(ability, index) in specialAbilities" :key="index" class="hud-data-item" style="display: block; margin-bottom: 8px;">
-              <span class="hud-label" :style="{ color: _.get(ability, 'is_used', false) ? 'var(--text-dim)' : 'var(--text-light)' }">
+            <div
+              v-for="(ability, index) in specialAbilities"
+              :key="index"
+              class="hud-data-item"
+              style="display: block; margin-bottom: 8px"
+            >
+              <span
+                class="hud-label"
+                :style="{ color: _.get(ability, 'is_used', false) ? 'var(--text-dim)' : 'var(--text-light)' }"
+              >
                 {{ _.get(ability, 'is_used', false) ? '[已使用]' : '' }}{{ _.get(ability, 'ability_name', '未知能力') }}
               </span>
-              <span :style="{ color: getQualityColor(_.get(ability, 'ability_quality', '品质不明')) }">{{ _.get(ability, 'ability_quality', '品质不明') }}</span>
-              <span :style="{ color: _.get(ability, 'is_passive', false) ? 'var(--detective-cyan)' : 'var(--erotic-pink)' }">{{ _.get(ability, 'is_passive', false) ? '被动' : '主动' }}</span>
-              <span class="hud-value" style="white-space: pre-wrap; text-align: left; padding-left: 10px;">{{ _.get(ability, 'ability_description', '描述缺失') }}</span>
+              <span :style="{ color: getQualityColor(_.get(ability, 'ability_quality', '品质不明')) }">{{
+                _.get(ability, 'ability_quality', '品质不明')
+              }}</span>
+              <span
+                :style="{ color: _.get(ability, 'is_passive', false) ? 'var(--detective-cyan)' : 'var(--erotic-pink)' }"
+                >{{ _.get(ability, 'is_passive', false) ? '被动' : '主动' }}</span
+              >
+              <span class="hud-value" style="white-space: pre-wrap; text-align: left; padding-left: 10px">{{
+                _.get(ability, 'ability_description', '描述缺失')
+              }}</span>
             </div>
           </template>
           <template v-else>无</template>
@@ -52,9 +77,18 @@
         <h3 class="hud-block-title">[ 平然化条目 // Normalization ]</h3>
         <div class="hud-list">
           <template v-if="normalizationEntries.length > 0">
-            <div v-for="(entry, index) in normalizationEntries" :key="index" class="hud-data-item" style="display: block; margin-bottom: 8px;">
-              <span class="hud-label" style="color: var(--detective-cyan);">{{ _.get(entry, 'title', '名称缺失') }}</span>
-              <span class="hud-value" style="white-space: pre-wrap; text-align: left; padding-left: 10px;">- {{ _.get(entry, 'description', '影响未知') }}</span>
+            <div
+              v-for="(entry, index) in normalizationEntries"
+              :key="index"
+              class="hud-data-item"
+              style="display: block; margin-bottom: 8px"
+            >
+              <span class="hud-label" style="color: var(--detective-cyan)">{{
+                _.get(entry, 'title', '名称缺失')
+              }}</span>
+              <span class="hud-value" style="white-space: pre-wrap; text-align: left; padding-left: 10px"
+                >- {{ _.get(entry, 'description', '影响未知') }}</span
+              >
             </div>
           </template>
           <template v-else>无</template>
@@ -91,13 +125,13 @@ const caseLevelText = computed(() => {
 });
 
 const specialAbilities = computed(() => {
-    const abilities = _.get(statData.value, 'user.special_abilities', []);
-    return Array.isArray(abilities) ? abilities : [];
+  const abilities = _.get(statData.value, 'user.special_abilities', []);
+  return Array.isArray(abilities) ? abilities : [];
 });
 
 const normalizationEntries = computed(() => {
-    const entries = _.get(statData.value, 'world.normalization_entries', []);
-    return Array.isArray(entries) ? entries : [];
+  const entries = _.get(statData.value, 'world.normalization_entries', []);
+  return Array.isArray(entries) ? entries : [];
 });
 
 function getQualityColor(quality: string): string {
@@ -129,7 +163,8 @@ function getQualityColor(quality: string): string {
   }
 }
 
-#detective-hud-root, .error-message {
+#detective-hud-root,
+.error-message {
   background-color: var(--bg-dark);
   color: var(--text-light);
   font-family: var(--font-main);
@@ -149,17 +184,33 @@ function getQualityColor(quality: string): string {
   border-radius: 8px;
   padding: 18px;
   margin: 15px 0;
-  box-shadow: 0 0 20px rgba(255, 0, 119, 0.2), 0 4px 30px rgba(0, 0, 0, 0.5);
+  box-shadow:
+    0 0 20px rgba(255, 0, 119, 0.2),
+    0 4px 30px rgba(0, 0, 0, 0.5);
   position: relative;
   overflow: hidden;
-  clip-path: polygon(0 10px, 10px 0, calc(100% - 10px) 0, 100% 10px, 100% calc(100% - 10px), calc(100% - 10px) 100%, 10px 100%, 0 calc(100% - 10px));
+  clip-path: polygon(
+    0 10px,
+    10px 0,
+    calc(100% - 10px) 0,
+    100% 10px,
+    100% calc(100% - 10px),
+    calc(100% - 10px) 100%,
+    10px 100%,
+    0 calc(100% - 10px)
+  );
 }
 
 #detective-hud-root::before {
   content: '';
   position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background-image: linear-gradient(0deg,rgba(0,0,0,0) 95%,rgba(255,255,255,0.05) 97%,rgba(0,0,0,0) 100%), linear-gradient(90deg,rgba(0,0,0,0) 95%,rgba(255,255,255,0.05) 97%,rgba(0,0,0,0) 100%);
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image:
+    linear-gradient(0deg, rgba(0, 0, 0, 0) 95%, rgba(255, 255, 255, 0.05) 97%, rgba(0, 0, 0, 0) 100%),
+    linear-gradient(90deg, rgba(0, 0, 0, 0) 95%, rgba(255, 255, 255, 0.05) 97%, rgba(0, 0, 0, 0) 100%);
   background-size: 40px 40px;
   opacity: 0.3;
   pointer-events: none;
