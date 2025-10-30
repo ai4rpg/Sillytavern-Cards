@@ -234,7 +234,7 @@ async function handleConfirmation() {
 }
 
 body {
-  background-color: #000000;
+  background-color: transparent;
   color: var(--text-light);
   font-family: var(--font-main);
   display: flex;
@@ -277,9 +277,7 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
-  background-image:
-    linear-gradient(0deg, rgba(0, 0, 0, 0) 95%, rgba(255, 255, 255, 0.05) 97%, rgba(0, 0, 0, 0) 100%),
-    linear-gradient(90deg, rgba(0, 0, 0, 0) 95%, rgba(255, 255, 255, 0.05) 97%, rgba(0, 0, 0, 0) 100%);
+  background-color: var(--bg-dark);
   background-size: 30px 30px; /* 可选：在移动端减小网格大小 */
   opacity: 0.3;
   pointer-events: none;
