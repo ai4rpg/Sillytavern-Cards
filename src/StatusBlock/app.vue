@@ -3,22 +3,22 @@
   <div v-else-if="statData" id="detective-hud-root">
     <div class="hud-header">
       <div class="hud-time-date">
-        <span>{{ _.get(statData, 'world.time', '未知时间') }}</span> //
-        <span>{{ _.get(statData, 'world.date', '未知日期') }}</span>
+        <span>{{ _.get(statData, 'world.time[0]', '未知时间') }}</span> //
+        <span>{{ _.get(statData, 'world.date[0]', '未知日期') }}</span>
       </div>
-      <div id="hud-phase" class="hud-phase">{{ _.get(statData, 'user.current_phase', '未知阶段') }}</div>
+      <div id="hud-phase" class="hud-phase">{{ _.get(statData, 'user.current_phase[0]', '未知阶段') }}</div>
     </div>
     <div class="hud-grid" style="margin-top: 0">
       <div class="hud-block">
         <h3 class="hud-block-title">[ 案件信息 // Case Info ]</h3>
         <div class="hud-data-item">
           <span class="hud-label">当前案件:</span
-          ><span class="hud-value">{{ _.get(statData, 'world.current_case.case_name', '无') }}</span>
+          ><span class="hud-value">{{ _.get(statData, 'world.current_case.case_name[0]', '无') }}</span>
         </div>
         <div class="hud-data-item">
           <span class="hud-label">地点:</span
           ><span class="hud-value hud-location-text">{{
-            _.get(statData, 'world.current_case.case_location', '未知地点')
+            _.get(statData, 'world.current_case.case_location[0]', '未知地点')
           }}</span>
         </div>
         <div class="hud-data-item">
@@ -29,16 +29,16 @@
         <h3 class="hud-block-title">[ 侦探状态 // Detective ]</h3>
         <div class="hud-gauge-container">
           <div class="hud-label">剩余行动力 (AP)</div>
-          <progress :value="_.get(statData, 'user.action_points', 0)" max="30"></progress>
-          <div class="hud-gauge-text">{{ _.get(statData, 'user.action_points', 0) }} / 30</div>
+          <progress :value="_.get(statData, 'user.action_points[0]', 0)" max="30"></progress>
+          <div class="hud-gauge-text">{{ _.get(statData, 'user.action_points[0]', 0) }} / 30</div>
         </div>
       </div>
     </div>
     <div class="hud-block" style="margin-top: 15px">
       <h3 class="hud-block-title" style="color: var(--erotic-pink)">[ 失控值 // Reality Distortion ]</h3>
       <div class="hud-gauge-container">
-        <progress :value="_.get(statData, 'world.current_case.out_of_control', 0)" max="100"></progress>
-        <div class="hud-gauge-text">{{ _.get(statData, 'world.current_case.out_of_control', 0) }} / 100</div>
+        <progress :value="_.get(statData, 'world.current_case.out_of_control[0]', 0)" max="100"></progress>
+        <div class="hud-gauge-text">{{ _.get(statData, 'world.current_case.out_of_control[0]', 0) }} / 100</div>
       </div>
     </div>
     <div class="hud-grid" style="margin-top: 15px">
@@ -54,19 +54,22 @@
             >
               <span
                 class="hud-label"
-                :style="{ color: _.get(ability, 'is_used', false) ? 'var(--text-dim)' : 'var(--text-light)' }"
+                :style="{ color: _.get(ability, 'is_used[0]', false) ? 'var(--text-dim)' : 'var(--text-light)' }"
               >
-                {{ _.get(ability, 'is_used', false) ? '[已使用]' : '' }}{{ _.get(ability, 'ability_name', '未知能力') }}
+                {{ _.get(ability, 'is_used[0]', false) ? '[已使用]' : ''
+                }}{{ _.get(ability, 'ability_name[0]', '未知能力') }}
               </span>
-              <span :style="{ color: getQualityColor(_.get(ability, 'ability_quality', '品质不明')) }">{{
-                _.get(ability, 'ability_quality', '品质不明')
+              <span :style="{ color: getQualityColor(_.get(ability, 'ability_quality[0]', '品质不明')) }">{{
+                _.get(ability, 'ability_quality[0]', '品质不明')
               }}</span>
               <span
-                :style="{ color: _.get(ability, 'is_passive', false) ? 'var(--detective-cyan)' : 'var(--erotic-pink)' }"
-                >{{ _.get(ability, 'is_passive', false) ? '被动' : '主动' }}</span
+                :style="{
+                  color: _.get(ability, 'is_passive[0]', false) ? 'var(--detective-cyan)' : 'var(--erotic-pink)',
+                }"
+                >{{ _.get(ability, 'is_passive[0]', false) ? '被动' : '主动' }}</span
               >
               <span class="hud-value" style="white-space: pre-wrap; text-align: left; padding-left: 10px">{{
-                _.get(ability, 'ability_description', '描述缺失')
+                _.get(ability, 'ability_description[0]', '描述缺失')
               }}</span>
             </div>
           </template>
@@ -84,10 +87,10 @@
               style="display: block; margin-bottom: 8px"
             >
               <span class="hud-label" style="color: var(--detective-cyan)">{{
-                _.get(entry, 'title', '名称缺失')
+                _.get(entry, 'title[0]', '名称缺失')
               }}</span>
               <span class="hud-value" style="white-space: pre-wrap; text-align: left; padding-left: 10px"
-                >- {{ _.get(entry, 'description', '影响未知') }}</span
+                >- {{ _.get(entry, 'description[0]', '影响未知') }}</span
               >
             </div>
           </template>
@@ -100,8 +103,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue';
 import _ from 'lodash';
+import { computed, onMounted, ref } from 'vue';
 
 const statData = ref<any>(null);
 const error = ref<string | null>(null);
@@ -120,17 +123,17 @@ onMounted(async () => {
 });
 
 const caseLevelText = computed(() => {
-  const level = _.get(statData.value, 'world.current_case.difficulty_class', '未知');
+  const level = _.get(statData.value, 'world.current_case.difficulty_class[0]', '未知');
   return level === 0 ? '' : level;
 });
 
 const specialAbilities = computed(() => {
-  const abilities = _.get(statData.value, 'user.special_abilities', []);
+  const abilities = _.get(statData.value, 'user.special_abilities[0]', []);
   return Array.isArray(abilities) ? abilities : [];
 });
 
 const normalizationEntries = computed(() => {
-  const entries = _.get(statData.value, 'world.normalization_entries', []);
+  const entries = _.get(statData.value, 'world.normalization_entries[0]', []);
   return Array.isArray(entries) ? entries : [];
 });
 
