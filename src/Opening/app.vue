@@ -201,7 +201,7 @@ async function handleConfirmation() {
     _.set(stats, PATHS.PHASE_CHANGED, 0);
 
     await Mvu.replaceMvuData(stats, { type: 'message', message_id: 'latest' });
-    const generatedResponse = await triggerSlash('/trigger await=true');
+    const generatedResponse = await generate({ user_input: '' });
     await triggerSlash(`/addswipe switch=true ${generatedResponse}`);
   } catch (error: any) {
     console.error('角色创建失败:', error);
@@ -217,7 +217,7 @@ async function handleConfirmation() {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;500;700&family=Orbitron:wght@400;700&display=swap');
 :root {
   --erotic-pink: #ff0077;
@@ -234,7 +234,7 @@ async function handleConfirmation() {
 }
 
 body {
-  background-color: transparent;
+  background-color: var(--bg-panel);
   color: var(--text-light);
   font-family: var(--font-main);
   display: flex;
@@ -277,7 +277,6 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: var(--bg-dark);
   background-size: 30px 30px; /* 可选：在移动端减小网格大小 */
   opacity: 0.3;
   pointer-events: none;
