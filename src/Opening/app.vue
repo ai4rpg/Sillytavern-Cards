@@ -84,14 +84,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, onMounted } from 'vue';
 import _ from 'lodash'; // Assuming lodash is available globally or imported
+import { computed, reactive, ref } from 'vue';
 
 const selections = reactive({
-  livelihood: null,
-  god: null,
-  district: null,
-  resistance: null,
+  livelihood: '',
+  god: '',
+  district: '',
+  resistance: '',
 });
 
 const confirmButtonText = ref('这就是我了');
@@ -160,7 +160,7 @@ async function handleConfirmation() {
         '无法访问酒馆助手核心API(triggerSlash)或MVU脚本。请确保酒馆助手 (Tavern Helper) 已安装并正确加载MVU。',
       );
     }
-    const stats = Mvu.getMvuData({ type: 'message', message_id: '0' });
+    const stats = Mvu.getMvuData({ type: 'message', message_id: 0 });
     if (!stats || !stats.stat_data) {
       console.warn('未在聊天变量中找到 stat_data。跳过自动化处理。');
       return;
@@ -184,7 +184,7 @@ async function handleConfirmation() {
     if (abilityDB.livelihood[livelihoodSelection]) {
       const livelihoodAbilities = abilityDB.livelihood[livelihoodSelection];
       if (Array.isArray(livelihoodAbilities)) {
-        abilitiesToAdd.push(...livelihabilities);
+        abilitiesToAdd.push(...livelihoodAbilities);
       } else {
         abilitiesToAdd.push(livelihoodAbilities);
       }
