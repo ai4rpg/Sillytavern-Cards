@@ -234,7 +234,7 @@ async function handleConfirmation() {
 }
 
 body {
-  background-color: var(--bg-panel);
+  background-color: var(--bg-dark);
   color: var(--text-light);
   font-family: var(--font-main);
   display: flex;
