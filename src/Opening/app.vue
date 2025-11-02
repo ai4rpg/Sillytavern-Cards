@@ -76,7 +76,7 @@
     </div>
 
     <div class="confirm-button-container">
-      <button class="confirm-button" :disabled="!allSelected" @click="handleConfirmation">
+      <button class="confirm-button" :disabled="!allSelected || isConfirming" @click="handleConfirmation">
         {{ confirmButtonText }}
       </button>
     </div>
@@ -84,8 +84,9 @@
 </template>
 
 <script setup lang="ts">
-import _ from 'lodash'; // Assuming lodash is available globally or imported
 import { computed, reactive, ref } from 'vue';
+
+import { createStart } from './actions';
 
 const selections = reactive({
   livelihood: '',
@@ -95,6 +96,7 @@ const selections = reactive({
 });
 
 const confirmButtonText = ref('这就是我了');
+const isConfirming = ref(false);
 
 const livelihoodOptions = [
   { value: '侦探', title: '侦探', description: '失去了特殊能力的侦探，又获得了新的能力' },
@@ -131,18 +133,8 @@ const resistanceOptions = [
     title: '“感觉遮蔽”',
     description: '你的精神完全屏蔽了性欲，无法享受快感，但肉体受到刺激的表现正常',
   },
-  { value: '你只是很镇定', title: '你只是很镇定', description: '你的精神韧性远高于其他人，但有着和正常人无二的性欲' },
+  { value: '只是很镇定', title: '只是很镇定', description: '你的精神韧性远高于其他人，但有着和正常人无二的性欲' },
 ];
-
-const PATHS = {
-  RESISTANCE: 'stat_data.user.sex_statue.lust_resistance[0]',
-  ABILITIES: 'stat_data.user.special_abilities[0]',
-  IDENTITY: 'stat_data.user.profile.past_identity[0]',
-  BLESSING: 'stat_data.user.profile.bless_old_gods[0]',
-  HOME: 'stat_data.user.profile.home[0]',
-  PHASE_CHANGED: 'stat_data.latent_variables.ejs_index.phase_changed[0]',
-  OPTION_DB: 'stat_data.latent_variables.opening_options_db',
-};
 
 const allSelected = computed(() => {
   return Object.values(selections).every(value => value !== null);
@@ -153,66 +145,16 @@ function selectOption(group: keyof typeof selections, value: string) {
 }
 
 async function handleConfirmation() {
+  isConfirming.value = true;
   confirmButtonText.value = '正在生成...';
   try {
-    if (typeof Mvu === 'undefined' || typeof triggerSlash !== 'function') {
-      throw new Error(
-        '无法访问酒馆助手核心API(triggerSlash)或MVU脚本。请确保酒馆助手 (Tavern Helper) 已安装并正确加载MVU。',
-      );
-    }
-    const stats = Mvu.getMvuData({ type: 'message', message_id: 0 });
-    if (!stats || !stats.stat_data) {
-      console.warn('未在聊天变量中找到 stat_data。跳过自动化处理。');
-      return;
-    }
-
-    const abilityDB = _.get(stats, PATHS.OPTION_DB);
-
-    const abilitiesToAdd: string[] = [];
-    const livelihoodSelection = selections.livelihood;
-    const godSelection = selections.god;
-    const districtSelection = selections.district;
-    const resistanceSelection = selections.resistance;
-
-    if (abilityDB.resistance[resistanceSelection]) {
-      abilitiesToAdd.push(abilityDB.resistance[resistanceSelection]);
-    } else {
-      console.warn('对应 色情侦探的素质 选项缺失。');
-      return;
-    }
-
-    if (abilityDB.livelihood[livelihoodSelection]) {
-      const livelihoodAbilities = abilityDB.livelihood[livelihoodSelection];
-      if (Array.isArray(livelihoodAbilities)) {
-        abilitiesToAdd.push(...livelihoodAbilities);
-      } else {
-        abilitiesToAdd.push(livelihoodAbilities);
-      }
-    } else {
-      console.warn('对应 过往 选项缺失。');
-      return;
-    }
-
-    _.set(stats, PATHS.IDENTITY, livelihoodSelection);
-    _.set(stats, PATHS.BLESSING, godSelection);
-    _.set(stats, PATHS.HOME, districtSelection);
-    _.set(stats, PATHS.RESISTANCE, resistanceSelection);
-    _.update(stats, PATHS.ABILITIES, (abilities: string[] = []) => [...abilities, ...abilitiesToAdd]);
-    _.set(stats, PATHS.PHASE_CHANGED, 0);
-
-    await Mvu.replaceMvuData(stats, { type: 'message', message_id: 'latest' });
-    const generatedResponse = await generate({ user_input: '' });
-    await triggerSlash(`/addswipe switch=true ${generatedResponse}`);
+    await createStart(selections);
   } catch (error: any) {
     console.error('角色创建失败:', error);
     confirmButtonText.value = '错误！请检查控制台';
-    // Optionally, add a class to the button for error styling
-    // document.getElementById('confirm-btn')?.classList.add('error-button');
-    alert(`角色创建失败！
-
-错误详情: ${error.message}
-
-请检查浏览器控制台(F12)获取更多信息。`);
+    alert(`角色创建失败！ 错误详情: ${error.message} 请检查浏览器控制台(F12)获取更多信息。`);
+  } finally {
+    isConfirming.value = false;
   }
 }
 </script>

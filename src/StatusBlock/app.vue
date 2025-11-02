@@ -8,7 +8,11 @@
       </div>
       <div id="hud-phase" class="hud-phase">{{ _.get(statData, 'user.current_phase[0]', '未知阶段') }}</div>
     </div>
-    <div class="hud-grid" style="margin-top: 0">
+    <div
+      class="hud-grid"
+      style="margin-top: 0"
+      v-if="_.get(statData, 'user.current_phase[0]', '未知阶段') !== '日常阶段'"
+    >
       <div class="hud-block">
         <h3 class="hud-block-title">[ 案件信息 // Case Info ]</h3>
         <div class="hud-data-item">
@@ -16,7 +20,7 @@
           ><span class="hud-value">{{ _.get(statData, 'world.current_case.case_name[0]', '无') }}</span>
         </div>
         <div class="hud-data-item">
-          <span class="hud-label">地点:</span
+          <span class="hud-label">案件地点:</span
           ><span class="hud-value hud-location-text">{{
             _.get(statData, 'world.current_case.case_location[0]', '未知地点')
           }}</span>
@@ -34,11 +38,49 @@
         </div>
       </div>
     </div>
-    <div class="hud-block" style="margin-top: 15px">
+    <div
+      class="hud-block"
+      style="margin-top: 15px"
+      v-if="_.get(statData, 'user.current_phase[0]', '未知阶段') !== '日常阶段'"
+    >
       <h3 class="hud-block-title" style="color: var(--erotic-pink)">[ 失控值 // Reality Distortion ]</h3>
       <div class="hud-gauge-container">
         <progress :value="_.get(statData, 'world.current_case.out_of_control[0]', 0)" max="100"></progress>
         <div class="hud-gauge-text">{{ _.get(statData, 'world.current_case.out_of_control[0]', 0) }} / 100</div>
+      </div>
+    </div>
+    <div class="hud-grid" style="margin-top: 15px">
+      <div class="hud-block">
+        <h3 class="hud-block-title">[ 个人信息 // Personal Info ]</h3>
+        <div class="hud-data-item">
+          <span class="hud-label">地点:</span>
+          <span class="hud-value hud-location-text">{{ _.get(statData, 'user.location[0]', '未知地点') }}</span>
+        </div>
+        <div class="hud-data-item">
+          <span class="hud-label">身份:</span>
+          <span class="hud-value">{{ _.get(statData, 'user.profile.past_identity[0]', '未知过往') }}</span>
+        </div>
+        <div class="hud-data-item">
+          <span class="hud-label">侦破案件数:</span>
+          <span class="hud-value">{{ _.get(statData, 'user.profile.solved_cases_count[0]', 0) }}</span>
+        </div>
+      </div>
+      <div class="hud-block">
+        <h3 class="hud-block-title">[ 性状态 // Sex Status ]</h3>
+        <div class="hud-data-item">
+          <span class="hud-label">Lust Resistance:</span>
+          <span class="hud-value">{{ _.get(statData, 'user.sex_statue.lust_resistance[0]', 'N/A') }}</span>
+        </div>
+        <div class="hud-gauge-container">
+          <div class="hud-label">Body Excitement</div>
+          <progress :value="_.get(statData, 'user.sex_statue.body_excitement[0]', 0)" max="100"></progress>
+          <div class="hud-gauge-text">{{ _.get(statData, 'user.sex_statue.body_excitement[0]', 0) }} / 100</div>
+        </div>
+        <div class="hud-gauge-container">
+          <div class="hud-label">Spiritual Desire</div>
+          <progress :value="_.get(statData, 'user.sex_statue.spiritual_desire[0]', 0)" max="100"></progress>
+          <div class="hud-gauge-text">{{ _.get(statData, 'user.sex_statue.spiritual_desire[0]', 0) }} / 100</div>
+        </div>
       </div>
     </div>
     <div class="hud-grid" style="margin-top: 15px">
@@ -123,7 +165,7 @@ onMounted(async () => {
 });
 
 const caseLevelText = computed(() => {
-  const level = _.get(statData.value, 'world.current_case.difficulty_class[0]', '未知');
+  const level = _.get(statData.value, 'world.current_case.difficulty_class[0]', '');
   return level === 0 ? '' : level;
 });
 
@@ -153,7 +195,7 @@ function getQualityColor(quality: string): string {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;500;700&family=Orbitron:wght@400;700&display=swap');
 
 :root {

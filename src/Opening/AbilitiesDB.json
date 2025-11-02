@@ -1,0 +1,123 @@
+{
+  "resistance": {
+    "丧失性欲": {
+      "ability_name": ["丧失性欲", "string: The name of the special ability."],
+      "ability_quality": ["传说", "string: The quality of the special ability."],
+      "is_passive": [true, "boolean: Whether the ability is a passive skill."],
+      "ability_description": [
+        "你在精神和肉体上均不会产生性兴奋与性冲动，完全豁免[色情化特异点]的影响，字面意义的在肉体和精神上都无懈可击。",
+        "string: A brief description of the ability's effect. If it's an active ability, describe its impact on the 'out_of_control' value."
+      ],
+      "is_used": [false, "boolean: Whether the ability has been used in the current case."]
+    },
+    "感觉遮蔽": {
+      "ability_name": ["感觉遮蔽", "string: The name of the special ability."],
+      "ability_quality": ["普通", "string: The quality of the special ability."],
+      "is_passive": [true, "boolean: Whether the ability is a passive skill."],
+      "ability_description": [
+        "你的肉体会对性行为产生诚实的反应，但精神却可以保持冷静，完全豁免[色情化特异点]的精神影响，外神无法从精神层面摧毁你。",
+        "string: A brief description of the ability's effect. If it's an active ability, describe its impact on the 'out_of_control' value."
+      ],
+      "is_used": [false, "boolean: Whether the ability has been used in the current case."]
+    },
+    "只是很镇定": {
+      "ability_name": ["精神壁垒", "string: The name of the special ability."],
+      "ability_quality": ["普通", "string: The quality of the special ability."],
+      "is_passive": [true, "boolean: Whether the ability is a passive skill."],
+      "ability_description": [
+        "你获得了更高的精神韧性，不易因快感而迷失心智，可以稍微抵御[色情化特异点]的精神影响。",
+        "string: A brief description of the ability's effect. If it's an active ability, describe its impact on the 'out_of_control' value."
+      ],
+      "is_used": [false, "boolean: Whether the ability has been used in the current case."]
+    }
+  },
+  "livelihood": {
+    "侦探": [
+      {
+        "ability_name": ["悸动", ""],
+        "ability_quality": ["普通", ""],
+        "is_passive": [false, ""],
+        "ability_description": [
+          "本回合的行动将不消耗行动力。你偶尔还能回想起曾经破案时美妙的感觉，这使你充满了决心。失控值-1。",
+          ""
+        ],
+        "is_used": [false, ""]
+      },
+      {
+        "ability_name": ["线索串联", ""],
+        "ability_quality": ["普通", ""],
+        "is_passive": [false, ""],
+        "ability_description": ["揭示一个案件弱点。少部分的直觉与大部分的逻辑推理。失控值-1。", ""],
+        "is_used": [false, ""]
+      }
+    ],
+    "医生": {
+      "ability_name": ["精神分析", ""],
+      "ability_quality": ["普通", ""],
+      "is_passive": [true, ""],
+      "ability_description": [
+        "可以通过话聊来更有效地减少失控值。色情化特异点本就是一种精神科疾病，加一点超自然要素。",
+        ""
+      ],
+      "is_used": [false, ""]
+    },
+    "学生": {
+      "ability_name": ["变身", ""],
+      "ability_quality": ["史诗", ""],
+      "is_passive": [false, ""],
+      "ability_description": [
+        "变身成魔法少女，身体和精神都得到大幅强化，还能飞。守护人们的英雄，可不能败北啊！失控值+5。",
+        ""
+      ],
+      "is_used": [false, ""]
+    },
+    "潜藏者": {
+      "ability_name": ["烙印之人", ""],
+      "ability_quality": ["普通", ""],
+      "is_passive": [true, ""],
+      "ability_description": [
+        "你更容易成为色情化特异点集中攻击的目标。你被占有欲很强的魔女盯上了！她什么时候会找到你?",
+        ""
+      ],
+      "is_used": [false, ""]
+    },
+    "画家": {
+      "ability_name": ["神之梦", ""],
+      "ability_quality": ["传说", ""],
+      "is_passive": [true, ""],
+      "ability_description": ["你能像捏橡皮泥一样改造现实。整个世界是你的一场梦境…吗？", ""],
+      "is_used": [false, ""]
+    },
+    "上班族": {
+      "ability_name": ["现实稳定锚", ""],
+      "ability_quality": ["史诗", ""],
+      "is_passive": [false, ""],
+      "ability_description": [
+        "强行稳定现实的锚点,在5分钟内让色情化特异点对现界的影响完全消失。这个世界还是无聊点好，失控值-8。",
+        ""
+      ],
+      "is_used": [false, ""]
+    },
+    "修习术法者": {
+      "ability_name": ["咒法自然", ""],
+      "ability_quality": ["稀有", ""],
+      "is_passive": [true, ""],
+      "ability_description": [
+        "你精通画符炼丹之道，可引天雷地火，对妖物鬼怪特攻。直到很久后你才发现道法与咒术同出一脉。",
+        ""
+      ],
+      "is_used": [false, ""]
+    },
+    "魔修": {
+      "ability_name": ["血刻印", ""],
+      "ability_quality": ["史诗", ""],
+      "is_passive": [true, ""],
+      "ability_description": [
+        "你曾是血道宗师，精通各种血道仙法，虽然因复生失去了绝大部分力量，但仍能使用些血道小术法。恐怕世上的正统魔修…或者说修道之人，只剩你一人了，这场与正道的战争，最终还是由你取得了最终的胜利。",
+        ""
+      ],
+      "is_used": [false, ""]
+    },
+    "迷雾之人": []
+  }
+}
