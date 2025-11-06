@@ -66,18 +66,14 @@
         </div>
       </div>
       <div class="hud-block">
-        <h3 class="hud-block-title">[ 性状态 // Sex Status ]</h3>
-        <div class="hud-data-item">
-          <span class="hud-label">Lust Resistance:</span>
-          <span class="hud-value">{{ _.get(statData, 'user.sex_statue.lust_resistance[0]', 'N/A') }}</span>
-        </div>
+        <h3 class="hud-block-title" style="color: var(--erotic-pink)">[ 性状态 // Sex Status ]</h3>
         <div class="hud-gauge-container">
-          <div class="hud-label">Body Excitement</div>
+          <div class="hud-label" style="color: var(--pink-glow)">肉体兴奋</div>
           <progress :value="_.get(statData, 'user.sex_statue.body_excitement[0]', 0)" max="100"></progress>
           <div class="hud-gauge-text">{{ _.get(statData, 'user.sex_statue.body_excitement[0]', 0) }} / 100</div>
         </div>
         <div class="hud-gauge-container">
-          <div class="hud-label">Spiritual Desire</div>
+          <div class="hud-label" style="color: var(--pink-glow)">精神欲望</div>
           <progress :value="_.get(statData, 'user.sex_statue.spiritual_desire[0]', 0)" max="100"></progress>
           <div class="hud-gauge-text">{{ _.get(statData, 'user.sex_statue.spiritual_desire[0]', 0) }} / 100</div>
         </div>
@@ -119,7 +115,7 @@
         </div>
       </div>
       <div class="hud-block">
-        <h3 class="hud-block-title">[ 平然化条目 // Normalization ]</h3>
+        <h3 class="hud-block-title" style="color: var(--erotic-pink)">[ 平然化条目 // Normalization ]</h3>
         <div class="hud-list">
           <template v-if="normalizationEntries.length > 0">
             <div
@@ -153,7 +149,8 @@ const error = ref<string | null>(null);
 
 onMounted(async () => {
   try {
-    const messages = await getChatMessages(getCurrentMessageId());
+    await waitGlobalInitialized('Mvu');
+    const messages = getChatMessages(getCurrentMessageId());
     if (!messages || messages.length === 0 || !messages[0].data || !messages[0].data.stat_data) {
       throw new Error('无法加载状态数据。');
     }

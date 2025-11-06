@@ -69,7 +69,7 @@ export async function createStart(selections: {
   const latestMessage = getChatMessages(-1, { include_swipes: true })[0];
 
   // 4. Prepare new swipes and their data
-  const newSwipes = [...latestMessage.swipes, generatedResponse];
+  const newSwipes = [...latestMessage.swipes, generatedResponse + '\n\n<StatusPlaceHolderImpl/>'];
 
   const newSwipeData = await Mvu.parseMessage(generatedResponse, initialData);
 
