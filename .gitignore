@@ -11,6 +11,9 @@ pnpm-debug.log*
 
 auto-imports.d.ts
 components.d.ts
+<<<<<<< HEAD
 
 tavern_sync.mjs
 tavern_sync.yaml
+=======
+>>>>>>> 863524288243b48f95f2dcf78eac2a71cc5b2777

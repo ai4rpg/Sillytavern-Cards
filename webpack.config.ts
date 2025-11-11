@@ -51,7 +51,11 @@ function common_path(lhs: string, rhs: string) {
 
 function glob_script_files() {
   const files: string[] = fs
+<<<<<<< HEAD
     .globSync(`src/**/index.{ts,js}`)
+=======
+    .globSync(`src/**/index.{ts,tsx,js,jsx}`)
+>>>>>>> 863524288243b48f95f2dcf78eac2a71cc5b2777
     .filter(file => process.env.CI !== 'true' || !fs.readFileSync(path.join(__dirname, file)).includes('@no-ci'));
 
   const results: string[] = [];
@@ -251,7 +255,11 @@ function parse_configuration(entry: Entry): (_env: any, argv: any) => webpack.Co
             },
           ].concat(
             entry.html === undefined
+<<<<<<< HEAD
               ? <any[]>[
+=======
+              ? [
+>>>>>>> 863524288243b48f95f2dcf78eac2a71cc5b2777
                   {
                     test: /\.vue\.s(a|c)ss$/,
                     use: [
@@ -286,8 +294,13 @@ function parse_configuration(entry: Entry): (_env: any, argv: any) => webpack.Co
                     use: ['style-loader', { loader: 'css-loader', options: { url: false } }, 'postcss-loader'],
                     exclude: /node_modules/,
                   },
+<<<<<<< HEAD
                 ]
               : <any[]>[
+=======
+                ] as any[]
+              : [
+>>>>>>> 863524288243b48f95f2dcf78eac2a71cc5b2777
                   {
                     test: /\.s(a|c)ss$/,
                     use: [
@@ -307,7 +320,11 @@ function parse_configuration(entry: Entry): (_env: any, argv: any) => webpack.Co
                     ],
                     exclude: /node_modules/,
                   },
+<<<<<<< HEAD
                 ],
+=======
+                ] as any[],
+>>>>>>> 863524288243b48f95f2dcf78eac2a71cc5b2777
           ),
         },
       ],
@@ -444,6 +461,12 @@ function parse_configuration(entry: Entry): (_env: any, argv: any) => webpack.Co
       if (argv.mode !== 'production' && ['vue', 'pixi'].some(key => request.includes(key))) {
         return callback();
       }
+<<<<<<< HEAD
+=======
+      if (['react'].some(key => request.includes(key))) {
+        return callback();
+      }
+>>>>>>> 863524288243b48f95f2dcf78eac2a71cc5b2777
       const global = {
         jquery: '$',
         lodash: '_',
