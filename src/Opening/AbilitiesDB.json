@@ -5,7 +5,7 @@
       "ability_quality": ["传说", "string: The quality of the special ability."],
       "is_passive": [true, "boolean: Whether the ability is a passive skill."],
       "ability_description": [
-        "你在精神和肉体上均不会产生性兴奋与性冲动，完全豁免[色情化特异点]的影响，字面意义的在肉体和精神上都无懈可击。",
+        "在精神和肉体上均不会产生性兴奋与性冲动，完全豁免“色情化特异点”的影响，字面意义的在肉体和精神上都无懈可击。",
         "string: A brief description of the ability's effect. If it's an active ability, describe its impact on the 'out_of_control' value."
       ],
       "is_used": [false, "boolean: Whether the ability has been used in the current case."]
@@ -15,7 +15,7 @@
       "ability_quality": ["普通", "string: The quality of the special ability."],
       "is_passive": [true, "boolean: Whether the ability is a passive skill."],
       "ability_description": [
-        "你的肉体会对性行为产生诚实的反应，但精神却可以保持冷静，完全豁免[色情化特异点]的精神影响，外神无法从精神层面摧毁你。",
+        "肉体会对性行为产生诚实的反应，但精神却可以保持冷静，完全豁免“色情化特异点”的精神影响，外神无法从精神层面摧毁你。",
         "string: A brief description of the ability's effect. If it's an active ability, describe its impact on the 'out_of_control' value."
       ],
       "is_used": [false, "boolean: Whether the ability has been used in the current case."]
@@ -25,7 +25,7 @@
       "ability_quality": ["普通", "string: The quality of the special ability."],
       "is_passive": [true, "boolean: Whether the ability is a passive skill."],
       "ability_description": [
-        "你获得了更高的精神韧性，不易因快感而迷失心智，可以稍微抵御[色情化特异点]的精神影响。",
+        "获得了更高的精神韧性，不易因快感而迷失心智，可以稍微抵御“色情化特异点”的精神影响。",
         "string: A brief description of the ability's effect. If it's an active ability, describe its impact on the 'out_of_control' value."
       ],
       "is_used": [false, "boolean: Whether the ability has been used in the current case."]

@@ -137,7 +137,7 @@ const resistanceOptions = [
 ];
 
 const allSelected = computed(() => {
-  return Object.values(selections).every(value => value !== null);
+  return Object.values(selections).every(value => value !== '');
 });
 
 function selectOption(group: keyof typeof selections, value: string) {

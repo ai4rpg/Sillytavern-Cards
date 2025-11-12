@@ -95,12 +95,16 @@ $(() => {
   /** 根据当前阶段决定是否需要计算新的 phase_changed **/
   function changedIndexUpdate(stats: any): void {
     const current_phase: string = _.get(stats, PATHS.CURRENT_PHASE);
-    const action_points: number = _.get(stats, PATHS.ACTION_POINTS);
+    let action_points: number = _.get(stats, PATHS.ACTION_POINTS);
     const out_of_control: number = _.get(stats, PATHS.OUT_OF_CONTROL);
     const PHASE_TRANSITION_RULES: Record<string, () => number> = {
       日常阶段: () => (action_points <= 0 ? 2 : -1),
       侦破阶段: () => (out_of_control <= 0 ? 3 : action_points <= 0 ? 4 : -1),
     };
+
+    if (current_phase === '日常阶段') {
+      action_points -= 1;
+    }
 
     let phase_changed: number = _.get(stats, PATHS.PHASE_CHANGED);
 

@@ -8,8 +8,14 @@
       <div class="skill-card-header">
         <h3 class="skill-title">{{ bast.ability_name }}</h3>
         <div class="skill-meta">
-          <span class="skill-quality">{{ bast.ability_quality }}</span>
-          <span class="skill-nature">{{ bast.is_passive ? '被动' : '主动' }}</span>
+          <span class="skill-quality" :style="{ color: getQualityColor(bast.ability_quality) }">{{
+            bast.ability_quality
+          }}</span>
+          <span
+            class="skill-nature"
+            :style="{ color: bast.is_passive ? 'var(--detective-cyan)' : 'var(--erotic-pink)' }"
+            >{{ bast.is_passive ? '被动' : '主动' }}</span
+          >
         </div>
       </div>
       <div class="skill-card-body">{{ bast.ability_description }}</div>
@@ -19,8 +25,14 @@
       <div class="skill-card-header">
         <h3 class="skill-title">{{ hypnos.ability_name }}</h3>
         <div class="skill-meta">
-          <span class="skill-quality">{{ hypnos.ability_quality }}</span>
-          <span class="skill-nature">{{ hypnos.is_passive ? '被动' : '主动' }}</span>
+          <span class="skill-quality" :style="{ color: getQualityColor(hypnos.ability_quality) }">{{
+            hypnos.ability_quality
+          }}</span>
+          <span
+            class="skill-nature"
+            :style="{ color: hypnos.is_passive ? 'var(--detective-cyan)' : 'var(--erotic-pink)' }"
+            >{{ hypnos.is_passive ? '被动' : '主动' }}</span
+          >
         </div>
       </div>
       <div class="skill-card-body">{{ hypnos.ability_description }}</div>
@@ -30,8 +42,14 @@
       <div class="skill-card-header">
         <h3 class="skill-title">{{ nodens.ability_name }}</h3>
         <div class="skill-meta">
-          <span class="skill-quality">{{ nodens.ability_quality }}</span>
-          <span class="skill-nature">{{ nodens.is_passive ? '被动' : '主动' }}</span>
+          <span class="skill-quality" :style="{ color: getQualityColor(nodens.ability_quality) }">{{
+            nodens.ability_quality
+          }}</span>
+          <span
+            class="skill-nature"
+            :style="{ color: nodens.is_passive ? 'var(--detective-cyan)' : 'var(--erotic-pink)' }"
+            >{{ nodens.is_passive ? '被动' : '主动' }}</span
+          >
         </div>
       </div>
       <div class="skill-card-body">{{ nodens.ability_description }}</div>
@@ -72,6 +90,21 @@ const handleSelect = async (ability: any) => {
   await selectAbility(ability);
 };
 
+function getQualityColor(quality: string): string {
+  switch (quality) {
+    case '普通':
+      return 'var(--text-dim)';
+    case '稀有':
+      return 'var(--aq-green)';
+    case '史诗':
+      return 'var(--aq-orange)';
+    case '传说':
+      return 'var(--aq-gold)';
+    default:
+      return 'var(--text-light)';
+  }
+}
+
 onMounted(async () => {
   try {
     await waitGlobalInitialized('Mvu');
@@ -101,7 +134,7 @@ onMounted(async () => {
 });
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .hud-header {
   display: flex;
   justify-content: space-between;

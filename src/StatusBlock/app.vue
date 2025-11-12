@@ -51,6 +51,27 @@
     </div>
     <div class="hud-grid" style="margin-top: 15px">
       <div class="hud-block">
+        <h3 class="hud-block-title" style="color: var(--erotic-pink)">[ 平然化条目 // Normalization ]</h3>
+        <div class="hud-list">
+          <template v-if="normalizationEntries.length > 0">
+            <div
+              v-for="(entry, index) in normalizationEntries"
+              :key="index"
+              class="hud-data-item"
+              style="display: block; margin-bottom: 8px"
+            >
+              <span class="hud-label" style="color: var(--detective-cyan)">{{
+                _.get(entry, 'title[0]', '名称缺失')
+              }}</span>
+              <span class="hud-value" style="white-space: pre-wrap; text-align: left; padding-left: 10px">{{
+                _.get(entry, 'description[0]', '影响未知')
+              }}</span>
+            </div>
+          </template>
+          <template v-else>无</template>
+        </div>
+      </div>
+      <div class="hud-block">
         <h3 class="hud-block-title">[ 个人信息 // Personal Info ]</h3>
         <div class="hud-data-item">
           <span class="hud-label">地点:</span>
@@ -63,19 +84,6 @@
         <div class="hud-data-item">
           <span class="hud-label">侦破案件数:</span>
           <span class="hud-value">{{ _.get(statData, 'user.profile.solved_cases_count[0]', 0) }}</span>
-        </div>
-      </div>
-      <div class="hud-block">
-        <h3 class="hud-block-title" style="color: var(--erotic-pink)">[ 性状态 // Sex Status ]</h3>
-        <div class="hud-gauge-container">
-          <div class="hud-label" style="color: var(--pink-glow)">肉体兴奋</div>
-          <progress :value="_.get(statData, 'user.sex_statue.body_excitement[0]', 0)" max="100"></progress>
-          <div class="hud-gauge-text">{{ _.get(statData, 'user.sex_statue.body_excitement[0]', 0) }} / 100</div>
-        </div>
-        <div class="hud-gauge-container">
-          <div class="hud-label" style="color: var(--pink-glow)">精神欲望</div>
-          <progress :value="_.get(statData, 'user.sex_statue.spiritual_desire[0]', 0)" max="100"></progress>
-          <div class="hud-gauge-text">{{ _.get(statData, 'user.sex_statue.spiritual_desire[0]', 0) }} / 100</div>
         </div>
       </div>
     </div>
@@ -115,24 +123,16 @@
         </div>
       </div>
       <div class="hud-block">
-        <h3 class="hud-block-title" style="color: var(--erotic-pink)">[ 平然化条目 // Normalization ]</h3>
-        <div class="hud-list">
-          <template v-if="normalizationEntries.length > 0">
-            <div
-              v-for="(entry, index) in normalizationEntries"
-              :key="index"
-              class="hud-data-item"
-              style="display: block; margin-bottom: 8px"
-            >
-              <span class="hud-label" style="color: var(--detective-cyan)">{{
-                _.get(entry, 'title[0]', '名称缺失')
-              }}</span>
-              <span class="hud-value" style="white-space: pre-wrap; text-align: left; padding-left: 10px"
-                >- {{ _.get(entry, 'description[0]', '影响未知') }}</span
-              >
-            </div>
-          </template>
-          <template v-else>无</template>
+        <h3 class="hud-block-title" style="color: var(--erotic-pink)">[ 性状态 // Sex Status ]</h3>
+        <div class="hud-gauge-container">
+          <div class="hud-label" style="font-size: 0.8rem">肉体兴奋</div>
+          <progress :value="_.get(statData, 'user.sex_statue.body_excitement[0]', 0)" max="100"></progress>
+          <div class="hud-gauge-text">{{ _.get(statData, 'user.sex_statue.body_excitement[0]', 0) }} / 100</div>
+        </div>
+        <div class="hud-gauge-container">
+          <div class="hud-label" style="font-size: 0.8rem">精神欲望</div>
+          <progress :value="_.get(statData, 'user.sex_statue.spiritual_desire[0]', 0)" max="100"></progress>
+          <div class="hud-gauge-text">{{ _.get(statData, 'user.sex_statue.spiritual_desire[0]', 0) }} / 100</div>
         </div>
       </div>
     </div>
