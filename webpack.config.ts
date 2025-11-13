@@ -4,7 +4,10 @@ import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import fs from 'node:fs';
 import { createRequire } from 'node:module';
 import path from 'node:path';
+<<<<<<< HEAD
 import url from 'node:url';
+=======
+>>>>>>> 3ab6e276f0f763347644d96fd3b2ec647cedf1ab
 import RemarkHTML from 'remark-html';
 import { Server } from 'socket.io';
 import TerserPlugin from 'terser-webpack-plugin';
@@ -18,9 +21,12 @@ import WebpackObfuscator from 'webpack-obfuscator';
 const require = createRequire(import.meta.url);
 const HTMLInlineCSSWebpackPlugin = require('html-inline-css-webpack-plugin').default;
 
+<<<<<<< HEAD
 const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+=======
+>>>>>>> 3ab6e276f0f763347644d96fd3b2ec647cedf1ab
 interface Config {
   port: number;
   entries: Entry[];
@@ -51,8 +57,13 @@ function common_path(lhs: string, rhs: string) {
 
 function glob_script_files() {
   const files: string[] = fs
+<<<<<<< HEAD
     .globSync(`src/**/index.{ts,js}`)
     .filter(file => process.env.CI !== 'true' || !fs.readFileSync(path.join(__dirname, file)).includes('@no-ci'));
+=======
+    .globSync(`src/**/index.{ts,tsx,js,jsx}`)
+    .filter(file => process.env.CI !== 'true' || !fs.readFileSync(path.join(import.meta.dirname, file)).includes('@no-ci'));
+>>>>>>> 3ab6e276f0f763347644d96fd3b2ec647cedf1ab
 
   const results: string[] = [];
   const handle = (file: string) => {
@@ -95,7 +106,11 @@ function watch_it(compiler: webpack.Compiler) {
       });
     }
 
+<<<<<<< HEAD
     compiler.hooks.done.tap('updater', () => {
+=======
+    compiler.hooks.done.tapAsync('updater', () => {
+>>>>>>> 3ab6e276f0f763347644d96fd3b2ec647cedf1ab
       console.info('\n[Listener] 检测到完成编译, 推送更新事件...');
       io.emit('iframe_updated');
     });
@@ -103,7 +118,11 @@ function watch_it(compiler: webpack.Compiler) {
 }
 
 function parse_configuration(entry: Entry): (_env: any, argv: any) => webpack.Configuration {
+<<<<<<< HEAD
   const should_obfuscate = fs.readFileSync(path.join(__dirname, entry.script), 'utf-8').includes('@obfuscate');
+=======
+  const should_obfuscate = fs.readFileSync(path.join(import.meta.dirname, entry.script), 'utf-8').includes('@obfuscate');
+>>>>>>> 3ab6e276f0f763347644d96fd3b2ec647cedf1ab
   const script_filepath = path.parse(entry.script);
 
   return (_env, argv) => ({
@@ -114,7 +133,11 @@ function parse_configuration(entry: Entry): (_env: any, argv: any) => webpack.Co
     watchOptions: {
       ignored: ['**/dist', '**/node_modules'],
     },
+<<<<<<< HEAD
     entry: path.join(__dirname, entry.script),
+=======
+    entry: path.join(import.meta.dirname, entry.script),
+>>>>>>> 3ab6e276f0f763347644d96fd3b2ec647cedf1ab
     target: 'browserslist',
     output: {
       devtoolNamespace: 'tavern_helper_template',
@@ -129,7 +152,11 @@ function parse_configuration(entry: Entry): (_env: any, argv: any) => webpack.Co
         return `${is_direct === true ? 'src' : 'webpack'}://${info.namespace}/${resource_path}${is_direct || is_vue_script ? '' : '?' + info.hash}`;
       },
       filename: `${script_filepath.name}.js`,
+<<<<<<< HEAD
       path: path.join(__dirname, 'dist', path.relative(path.join(__dirname, 'src'), script_filepath.dir)),
+=======
+      path: path.join(import.meta.dirname, 'dist', path.relative(path.join(import.meta.dirname, 'src'), script_filepath.dir)),
+>>>>>>> 3ab6e276f0f763347644d96fd3b2ec647cedf1ab
       chunkFilename: `${script_filepath.name}.[contenthash].chunk.js`,
       asyncChunks: true,
       clean: true,
@@ -251,7 +278,11 @@ function parse_configuration(entry: Entry): (_env: any, argv: any) => webpack.Co
             },
           ].concat(
             entry.html === undefined
+<<<<<<< HEAD
               ? <any[]>[
+=======
+              ? [
+>>>>>>> 3ab6e276f0f763347644d96fd3b2ec647cedf1ab
                   {
                     test: /\.vue\.s(a|c)ss$/,
                     use: [
@@ -286,8 +317,13 @@ function parse_configuration(entry: Entry): (_env: any, argv: any) => webpack.Co
                     use: ['style-loader', { loader: 'css-loader', options: { url: false } }, 'postcss-loader'],
                     exclude: /node_modules/,
                   },
+<<<<<<< HEAD
                 ]
               : <any[]>[
+=======
+                ] as any[]
+              : [
+>>>>>>> 3ab6e276f0f763347644d96fd3b2ec647cedf1ab
                   {
                     test: /\.s(a|c)ss$/,
                     use: [
@@ -307,7 +343,11 @@ function parse_configuration(entry: Entry): (_env: any, argv: any) => webpack.Co
                     ],
                     exclude: /node_modules/,
                   },
+<<<<<<< HEAD
                 ],
+=======
+                ] as any[],
+>>>>>>> 3ab6e276f0f763347644d96fd3b2ec647cedf1ab
           ),
         },
       ],
@@ -317,7 +357,11 @@ function parse_configuration(entry: Entry): (_env: any, argv: any) => webpack.Co
       plugins: [
         new TsconfigPathsPlugin({
           extensions: ['.ts', '.js', '.tsx', '.jsx'],
+<<<<<<< HEAD
           configFile: path.join(__dirname, 'tsconfig.json'),
+=======
+          configFile: path.join(import.meta.dirname, 'tsconfig.json'),
+>>>>>>> 3ab6e276f0f763347644d96fd3b2ec647cedf1ab
         }),
       ],
       alias: {},
@@ -326,7 +370,11 @@ function parse_configuration(entry: Entry): (_env: any, argv: any) => webpack.Co
       ? [new MiniCssExtractPlugin()]
       : [
           new HtmlWebpackPlugin({
+<<<<<<< HEAD
             template: path.join(__dirname, entry.html),
+=======
+            template: path.join(import.meta.dirname, entry.html),
+>>>>>>> 3ab6e276f0f763347644d96fd3b2ec647cedf1ab
             filename: path.parse(entry.html).base,
             scriptLoading: 'module',
             cache: false,
@@ -444,6 +492,12 @@ function parse_configuration(entry: Entry): (_env: any, argv: any) => webpack.Co
       if (argv.mode !== 'production' && ['vue', 'pixi'].some(key => request.includes(key))) {
         return callback();
       }
+<<<<<<< HEAD
+=======
+      if (['react'].some(key => request.includes(key))) {
+        return callback();
+      }
+>>>>>>> 3ab6e276f0f763347644d96fd3b2ec647cedf1ab
       const global = {
         jquery: '$',
         lodash: '_',
