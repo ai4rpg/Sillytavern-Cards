@@ -6,6 +6,8 @@ $(() => {
     // user
     CURRENT_PHASE: 'stat_data.user.current_phase[0]',
     ACTION_POINTS: 'stat_data.user.action_points[0]',
+    EXCITEMENT: 'stat_data.user.sex_statue.body_excitement[0]',
+    DESIRE: 'stat_data.user.sex_statue.spiritual_desire[0]',
     ABILITIES: 'stat_data.user.special_abilities[0]',
     BLESSING: 'stat_data.user.profile.bless_old_gods[0]',
     SOLVED_CASES_COUNT: 'stat_data.user.profile.solved_cases_count[0]',
@@ -46,8 +48,8 @@ $(() => {
       ...Array(3).fill('史诗'),
       '传说',
     ];
-    _.update(stats, PATHS.CANDIDATE_QUALITIES, (candidates: Record<string, string>) =>
-      _.mapValues(candidates, key => {
+    _.update(stats, PATHS.CANDIDATE_QUALITIES, (candidates: Record<string, [string, string]>) =>
+      _.mapValues(candidates[0], key => {
         const max_bias = ABILITY_QUALITIES_WEIGHTED.length - 1;
         const final_bias = Math.min(bias + (BLESSING_BIASES[key as string] || 0), max_bias);
         return ABILITY_QUALITIES_WEIGHTED[_.random(final_bias, max_bias)];
@@ -69,11 +71,11 @@ $(() => {
   }
 
   /** 清理案件相关的核心信息。*/
-  function clearCaseInfoProgress(stats: any): void {
+  function clearCaseInfoProgress(stats: any, daily_ap: number): void {
     _.set(stats, PATHS.CASE_NAME, '');
     _.set(stats, PATHS.CASE_LOCATION, '');
     _.set(stats, PATHS.DIFFICULTY_CLASS, 0);
-    _.set(stats, PATHS.ACTION_POINTS, 5);
+    _.set(stats, PATHS.ACTION_POINTS, daily_ap);
     _.set(stats, PATHS.OUT_OF_CONTROL, 0);
   }
 
@@ -120,9 +122,10 @@ $(() => {
     }
 
     _.set(stats, PATHS.PHASE_CHANGED, phase_changed);
+    _.set(stats, PATHS.ACTION_POINTS, action_points);
   }
 
-  function statDataUpdate(stats: any): void {
+  function statDataUpdate(stats: any, daily_ap: number): void {
     const difficulty_class: number = _.get(stats, PATHS.DIFFICULTY_CLASS);
     const experience: number = _.get(stats, PATHS.EXPERIENCE);
     const LEVEL_RULE = (expr: number): number => {
@@ -138,7 +141,7 @@ $(() => {
 
     if (phase_changed === 1) {
       resetActiveSkills(stats);
-      clearCaseInfoProgress(stats);
+      clearCaseInfoProgress(stats, daily_ap);
       initializeAbilityQualities(stats, experience);
       _.set(stats, PATHS.CURRENT_PHASE, '日常阶段');
     } else if (phase_changed === 2) {
@@ -154,6 +157,17 @@ $(() => {
     }
   }
 
+  function nonNegative(value: number): number {
+    return value >= 0 ? value : 0;
+  }
+
+  function valuesFix(stats: any): void {
+    _.update(stats, PATHS.ACTION_POINTS, nonNegative);
+    _.update(stats, PATHS.EXCITEMENT, nonNegative);
+    _.update(stats, PATHS.DESIRE, nonNegative);
+    _.update(stats, PATHS.OUT_OF_CONTROL, nonNegative);
+  }
+
   // ===================================================================
   // 主事件监听器
   // ===================================================================
@@ -167,9 +181,11 @@ $(() => {
       }
       const role = messages[0].role;
       if (role === 'user') {
-        statDataUpdate(variables);
+        const daily_ap = last_message_id <= 1 ? 3 : 5;
+        statDataUpdate(variables, daily_ap);
         console.log('后台状态更新已成功应用。');
       }
+      valuesFix(variables);
     } catch (e) {
       console.error('脚本错误:', e);
     }

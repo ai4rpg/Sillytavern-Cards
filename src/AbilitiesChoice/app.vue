@@ -4,7 +4,7 @@
     <div class="hud-phase">选择一个祝福</div>
   </div>
   <div class="skill-upgrade-grid" :class="{ selecting: isSelecting }">
-    <div class="skill-card" id="bast" @click="handleSelect(bast)">
+    <div class="skill-card" id="bast" @click="handleSelect(0)">
       <div class="skill-card-header">
         <h3 class="skill-title">{{ bast.ability_name }}</h3>
         <div class="skill-meta">
@@ -21,7 +21,7 @@
       <div class="skill-card-body">{{ bast.ability_description }}</div>
     </div>
 
-    <div class="skill-card" id="hypnos" @click="handleSelect(hypnos)">
+    <div class="skill-card" id="hypnos" @click="handleSelect(1)">
       <div class="skill-card-header">
         <h3 class="skill-title">{{ hypnos.ability_name }}</h3>
         <div class="skill-meta">
@@ -38,7 +38,7 @@
       <div class="skill-card-body">{{ hypnos.ability_description }}</div>
     </div>
 
-    <div class="skill-card" id="nodens" @click="handleSelect(nodens)">
+    <div class="skill-card" id="nodens" @click="handleSelect(2)">
       <div class="skill-card-header">
         <h3 class="skill-title">{{ nodens.ability_name }}</h3>
         <div class="skill-meta">
@@ -62,32 +62,40 @@ import { onMounted, ref } from 'vue';
 import { selectAbility } from './actions';
 
 const isSelecting = ref(false);
+const originalAbilities = ref<any[]>([]);
 
-const bast = ref({
+type Ability = {
+  ability_name: string;
+  ability_quality: string;
+  ability_description: string;
+  is_passive: boolean;
+};
+
+const bast = ref<Ability>({
   ability_name: 'Loading...',
   ability_quality: '',
   ability_description: '',
   is_passive: false,
 });
 
-const hypnos = ref({
+const hypnos = ref<Ability>({
   ability_name: 'Loading...',
   ability_quality: '',
   ability_description: '',
   is_passive: false,
 });
 
-const nodens = ref({
+const nodens = ref<Ability>({
   ability_name: 'Loading...',
   ability_quality: '',
   ability_description: '',
   is_passive: false,
 });
 
-const handleSelect = async (ability: any) => {
+const handleSelect = async (index: number) => {
   if (isSelecting.value) return;
   isSelecting.value = true;
-  await selectAbility(ability);
+  await selectAbility(originalAbilities.value[index]);
 };
 
 function getQualityColor(quality: string): string {
@@ -105,6 +113,24 @@ function getQualityColor(quality: string): string {
   }
 }
 
+/**
+ * The AI returns ability properties as an array, where the first element is the value
+ * and the second is an explanation. This function extracts the value.
+ */
+function parseAbility(abilityData: any): Ability {
+  const parsed: { [key: string]: any } = {};
+  for (const key in abilityData) {
+    if (Object.prototype.hasOwnProperty.call(abilityData, key)) {
+      if (Array.isArray(abilityData[key]) && abilityData[key].length > 0) {
+        parsed[key] = abilityData[key][0];
+      } else {
+        parsed[key] = abilityData[key];
+      }
+    }
+  }
+  return parsed as Ability;
+}
+
 onMounted(async () => {
   try {
     await waitGlobalInitialized('Mvu');
@@ -116,9 +142,10 @@ onMounted(async () => {
     const generatedAbilities = mvuData?.stat_data?.latent_variables?.ability_update?.generated_abilities[0];
 
     if (generatedAbilities && Array.isArray(generatedAbilities) && generatedAbilities.length === 3) {
-      bast.value = generatedAbilities[0];
-      hypnos.value = generatedAbilities[1];
-      nodens.value = generatedAbilities[2];
+      originalAbilities.value = generatedAbilities;
+      bast.value = parseAbility(generatedAbilities[0]);
+      hypnos.value = parseAbility(generatedAbilities[1]);
+      nodens.value = parseAbility(generatedAbilities[2]);
     } else {
       throw new Error('未能够正确获取 AI 生成的候选能力');
     }
@@ -135,6 +162,20 @@ onMounted(async () => {
 </script>
 
 <style lang="scss">
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;500;700&family=Orbitron:wght@400;700&display=swap');
+
+:root {
+  --erotic-pink: #ff0077;
+  --detective-cyan: #00ffff;
+  --border-color: rgba(255, 0, 119, 0.3);
+  --text-light: #f5f5f5;
+  --text-dim: #b0a0c0;
+  --aq-green: #44ff00;
+  --aq-orange: #ff8000;
+  --aq-gold: #ffcc00;
+  --font-main: 'Noto Sans SC', sans-serif;
+}
+
 .hud-header {
   display: flex;
   justify-content: space-between;

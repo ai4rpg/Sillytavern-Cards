@@ -1,3 +1,5 @@
+import { isEqual } from 'lodash';
+
 export async function selectAbility(ability: any) {
   try {
     await waitGlobalInitialized('Mvu');
@@ -6,11 +8,11 @@ export async function selectAbility(ability: any) {
       throw new Error('未在聊天变量中找到 stat_data。');
     }
 
-    if (ability.is_used !== false) {
-      ability.is_used = false;
+    if (!isEqual(ability.is_used, [false, ''])) {
+      ability.is_used = [false, ''];
     }
 
-    const command = `_.assign('user.special_abilities[0]', ${ability}); // choose a special abilities`;
+    const command = `_.assign('user.special_abilities[0]', ${JSON.stringify(ability)}); // choose a special abilities`;
     const newMvuData = await Mvu.parseMessage(command, mvuData);
 
     if (newMvuData) {
