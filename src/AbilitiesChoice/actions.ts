@@ -16,6 +16,9 @@ export async function selectAbility(ability: any) {
     const newMvuData = await Mvu.parseMessage(command, mvuData);
 
     if (newMvuData) {
+      if (mvuData.delta_data) {
+        newMvuData.delta_data = { ...mvuData.delta_data, ...newMvuData.delta_data };
+      }
       await Mvu.replaceMvuData(newMvuData, { type: 'message', message_id: 'latest' });
     }
     toastr.success(`已选择能力: ${ability.ability_name}`);

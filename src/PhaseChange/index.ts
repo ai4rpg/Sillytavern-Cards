@@ -20,6 +20,7 @@ $(() => {
     PHASE_CHANGED: 'stat_data.latent_variables.ejs_index.phase_changed[0]',
     EXPERIENCE: 'stat_data.latent_variables.ejs_index.experience[0]',
     CANDIDATE_QUALITIES: 'stat_data.latent_variables.ability_update.candidate_ability_qualities[0]',
+    GENERATED_ABILITIES: 'stat_data.latent_variables.ability_update.generated_abilities[0]',
   } as const;
 
   // ===================================================================
@@ -55,6 +56,7 @@ $(() => {
         return ABILITY_QUALITIES_WEIGHTED[_.random(final_bias, max_bias)];
       }),
     );
+    _.set(stats, PATHS.GENERATED_ABILITIES, []);
     console.log(`已根据经验值和旧神的庇护抽选候选能力品质, 等待AI响应。`);
   }
 

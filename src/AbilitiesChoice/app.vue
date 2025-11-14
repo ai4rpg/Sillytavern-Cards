@@ -167,6 +167,8 @@ onMounted(async () => {
 :root {
   --erotic-pink: #ff0077;
   --detective-cyan: #00ffff;
+  --bg-dark: #10001a;
+  --bg-panel: #2a0a3a;
   --border-color: rgba(255, 0, 119, 0.3);
   --text-light: #f5f5f5;
   --text-dim: #b0a0c0;
@@ -178,11 +180,18 @@ onMounted(async () => {
 
 .hud-header {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
   align-items: center;
+  gap: 8px; /* Add a small gap between title and phase */
+  text-align: center;
 }
 .hud-block-title {
   color: var(--detective-cyan);
+  font-family: var(--font-hud);
+  margin: 0;
+}
+.hud-phase {
+  color: var(--text-light);
   font-family: var(--font-hud);
   margin: 0;
 }
@@ -195,7 +204,7 @@ onMounted(async () => {
 }
 
 .skill-card {
-  background: rgba(0, 0, 0, 0.3);
+  background: linear-gradient(145deg, var(--bg-dark), var(--bg-panel));
   border: 1px solid var(--border-color);
   border-radius: 6px;
   padding: 15px;
@@ -259,7 +268,7 @@ onMounted(async () => {
   white-space: pre-wrap;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 800px) {
   .skill-upgrade-grid {
     grid-template-columns: 1fr;
     gap: 12px;
