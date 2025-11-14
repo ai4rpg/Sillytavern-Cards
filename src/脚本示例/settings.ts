@@ -7,6 +7,7 @@ const Settings = z
 export const useSettingsStore = defineStore('settings', () => {
   const settings = ref(Settings.parse(getVariables({ type: 'script', script_id: getScriptId() })));
 
+<<<<<<< HEAD
   watch(
     settings,
     new_settings => {
@@ -17,4 +18,11 @@ export const useSettingsStore = defineStore('settings', () => {
   return {
     settings,
   };
+=======
+  watchEffect(() => {
+    insertOrAssignVariables(klona(settings.value), { type: 'script', script_id: getScriptId() });
+  });
+
+  return { settings };
+>>>>>>> b9c87dff9e7c9759a42bbc5a0675396be82983ad
 });
