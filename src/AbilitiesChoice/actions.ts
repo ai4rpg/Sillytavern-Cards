@@ -1,4 +1,4 @@
-import { isEqual } from 'lodash';
+import { isEqual, merge } from 'lodash';
 
 export async function selectAbility(ability: any) {
   try {
@@ -17,7 +17,7 @@ export async function selectAbility(ability: any) {
 
     if (newMvuData) {
       if (mvuData.delta_data) {
-        newMvuData.delta_data = { ...mvuData.delta_data, ...newMvuData.delta_data };
+        newMvuData.delta_data = merge({}, mvuData.delta_data, newMvuData.delta_data);
       }
       await Mvu.replaceMvuData(newMvuData, { type: 'message', message_id: 'latest' });
     }

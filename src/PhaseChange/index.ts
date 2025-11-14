@@ -50,10 +50,11 @@ $(() => {
       '传说',
     ];
     _.update(stats, PATHS.CANDIDATE_QUALITIES, (candidates: Record<string, [string, string]>) =>
-      _.mapValues(candidates[0], key => {
+      _.mapValues(candidates, (value, key) => {
         const max_bias = ABILITY_QUALITIES_WEIGHTED.length - 1;
         const final_bias = Math.min(bias + (BLESSING_BIASES[key as string] || 0), max_bias);
-        return ABILITY_QUALITIES_WEIGHTED[_.random(final_bias, max_bias)];
+        const quality = ABILITY_QUALITIES_WEIGHTED[_.random(final_bias, max_bias)];
+        return [quality, value[1]];
       }),
     );
     _.set(stats, PATHS.GENERATED_ABILITIES, []);
