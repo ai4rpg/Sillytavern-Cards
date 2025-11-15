@@ -97,6 +97,21 @@ $(() => {
     }
   }
 
+  /** 重置所有被动技能的使用状态。*/
+  function resetPassiveSkills(stats: any): void {
+    const abilities: any[] = _.get(stats, PATHS.ABILITIES, []);
+    let resetCount = 0;
+    abilities.forEach(ability => {
+      if (ability && _.get(ability, 'is_passive[0]') === true && _.get(ability, 'is_used[0]') === true) {
+        _.set(ability, 'is_used[0]', false);
+        resetCount++;
+      }
+    });
+    if (resetCount > 0) {
+      console.log(`已成功修正 ${resetCount} 个被动技能的使用状态。`);
+    }
+  }
+
   /** 根据当前阶段决定是否需要计算新的 phase_changed **/
   function changedIndexUpdate(stats: any): void {
     const current_phase: string = _.get(stats, PATHS.CURRENT_PHASE);
@@ -164,11 +179,12 @@ $(() => {
     return value >= 0 ? value : 0;
   }
 
-  function valuesFix(stats: any): void {
+  function valuesCorrection(stats: any): void {
     _.update(stats, PATHS.ACTION_POINTS, nonNegative);
     _.update(stats, PATHS.EXCITEMENT, nonNegative);
     _.update(stats, PATHS.DESIRE, nonNegative);
     _.update(stats, PATHS.OUT_OF_CONTROL, nonNegative);
+    resetPassiveSkills(stats);
   }
 
   // ===================================================================
@@ -188,7 +204,7 @@ $(() => {
         statDataUpdate(variables, daily_ap);
         console.log('后台状态更新已成功应用。');
       }
-      valuesFix(variables);
+      valuesCorrection(variables);
     } catch (e) {
       console.error('脚本错误:', e);
     }

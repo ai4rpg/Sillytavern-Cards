@@ -134,7 +134,8 @@ function parseAbility(abilityData: any): Ability {
 onMounted(async () => {
   try {
     await waitGlobalInitialized('Mvu');
-    const mvuData = Mvu.getMvuData({ type: 'message', message_id: 'latest' });
+    const current_message_id = getCurrentMessageId();
+    const mvuData = Mvu.getMvuData({ type: 'message', message_id: current_message_id });
     if (!mvuData || !mvuData.stat_data) {
       throw new Error('未在聊天变量中找到 stat_data。');
     }
