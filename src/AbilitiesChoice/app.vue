@@ -133,8 +133,12 @@ function parseAbility(abilityData: any): Ability {
 
 onMounted(async () => {
   try {
-    await waitGlobalInitialized('Mvu');
     const current_message_id = getCurrentMessageId();
+    const last_message_id = getLastMessageId();
+    if (current_message_id !== last_message_id) {
+      isSelecting.value = true;
+    }
+    await waitGlobalInitialized('Mvu');
     const mvuData = Mvu.getMvuData({ type: 'message', message_id: current_message_id });
     if (!mvuData || !mvuData.stat_data) {
       throw new Error('未在聊天变量中找到 stat_data。');
@@ -180,6 +184,7 @@ onMounted(async () => {
 }
 
 .hud-header {
+  background-color: rgba(42, 10, 58, 0.3);
   display: flex;
   flex-direction: column;
   align-items: center;

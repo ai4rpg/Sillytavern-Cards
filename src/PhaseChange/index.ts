@@ -119,7 +119,7 @@ $(() => {
     const out_of_control: number = _.get(stats, PATHS.OUT_OF_CONTROL);
     const PHASE_TRANSITION_RULES: Record<string, () => number> = {
       日常阶段: () => (action_points <= 0 ? 2 : -1),
-      侦破阶段: () => (out_of_control <= 0 ? 3 : action_points <= 0 ? 4 : -1),
+      侦破阶段: () => (out_of_control <= 0 ? 3 : action_points <= 0 || out_of_control >= 100 ? 4 : -1),
     };
 
     if (current_phase === '日常阶段') {
