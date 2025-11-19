@@ -29,7 +29,7 @@ $(() => {
   /**
    * 初始化候选能力的品质。
    * @param {any} stats - stat_data 对象。
-   * @param {number} bias - 随机偏移量。
+   * @param {number} bias - 随机池偏移。
    */
   function initializeAbilityQualities(stats: any, bias: number = 0): void {
     const blessing: string | undefined = _.get(stats, PATHS.BLESSING);
@@ -57,14 +57,13 @@ $(() => {
         return [quality, value[1]];
       }),
     );
-    _.set(stats, PATHS.GENERATED_ABILITIES, []);
     console.log(`已根据经验值和旧神的庇护抽选候选能力品质, 等待AI响应。`);
   }
 
   /**
    * 根据难度等级初始化案件。
    * @param {any} stats - stat_data 对象。
-   * @param {number} bias - 由经验值计算的难度偏移。
+   * @param {number} bias - 难度偏移。
    */
   function initializeCase(stats: any, bias: number): void {
     const difficulty_class = Math.max(1, Math.floor((Math.random() * 5 + bias + 2) / 3));
@@ -124,6 +123,10 @@ $(() => {
 
     if (current_phase === '日常阶段') {
       action_points -= 1;
+      _.set(stats, PATHS.ACTION_POINTS, action_points);
+      _.update(stats, PATHS.GENERATED_ABILITIES, abilities =>
+        abilities.isArray && abilities.length === 0 ? abilities : [],
+      );
     }
 
     let phase_changed: number = _.get(stats, PATHS.PHASE_CHANGED);
@@ -140,7 +143,6 @@ $(() => {
     }
 
     _.set(stats, PATHS.PHASE_CHANGED, phase_changed);
-    _.set(stats, PATHS.ACTION_POINTS, action_points);
   }
 
   function statDataUpdate(stats: any, daily_ap: number): void {
@@ -158,26 +160,25 @@ $(() => {
     const phase_changed: number = _.get(stats, PATHS.PHASE_CHANGED);
 
     if (phase_changed === 1) {
-      resetActiveSkills(stats);
       clearCaseInfoProgress(stats, daily_ap);
       initializeAbilityQualities(stats, experience);
       _.set(stats, PATHS.CURRENT_PHASE, '日常阶段');
     } else if (phase_changed === 2) {
-      _.set(stats, PATHS.CURRENT_PHASE, '侦破阶段');
       const level = LEVEL_RULE(experience);
       initializeCase(stats, level);
+      _.set(stats, PATHS.CURRENT_PHASE, '侦破阶段');
     } else if (phase_changed >= 3) {
-      _.update(stats, PATHS.EXPERIENCE, (expr: number) => expr + difficulty_class * 3);
+      resetActiveSkills(stats);
       _.update(stats, PATHS.SOLVED_CASES_COUNT, (count: number) => count + 4 - phase_changed);
-      _.update(stats, PATHS.EXPERIENCE, (expr: number) => expr + difficulty_class * (9 - phase_changed * 2));
+      _.update(stats, PATHS.EXPERIENCE, (expr: number) => expr + difficulty_class * (9 - phase_changed * 2)) + 3;
       _.set(stats, PATHS.CURRENT_PHASE, '后日谈阶段');
       _.set(stats, PATHS.ACTION_POINTS, 1);
     }
   }
 
-  function nonNegative(value: number): number {
+  const nonNegative = (value: number) => {
     return value >= 0 ? value : 0;
-  }
+  };
 
   function valuesCorrection(stats: any): void {
     _.update(stats, PATHS.ACTION_POINTS, nonNegative);
