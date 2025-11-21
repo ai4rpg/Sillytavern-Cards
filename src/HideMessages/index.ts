@@ -59,6 +59,6 @@ $(() => {
   }
 
   eventOn(getButtonEvent('隐藏侦破阶段楼层'), async () => {
-    hideMessage('侦破阶段');
+    await hideMessage('侦破阶段');
   });
 });
