@@ -16,6 +16,7 @@ $(() => {
     CASE_LOCATION: 'stat_data.world.current_case.case_location[0]',
     DIFFICULTY_CLASS: 'stat_data.world.current_case.difficulty_class[0]',
     OUT_OF_CONTROL: 'stat_data.world.current_case.out_of_control[0]',
+    NORMALIZATION: 'stat_data.world.normalization_entries[0]',
     // latent_variables
     PHASE_CHANGED: 'stat_data.latent_variables.ejs_index.phase_changed[0]',
     EXPERIENCE: 'stat_data.latent_variables.ejs_index.experience[0]',
@@ -180,11 +181,38 @@ $(() => {
     return value >= 0 ? value : 0;
   };
 
+  const removeHashPrefix = (str: string) => {
+    return str.replace(/^#\s?/, '');
+  };
+
+  const removePrefixDescriptions = (str: string) => {
+    return str.replace(/^(主|被)动能力(，|,|。)\s?/, '');
+  };
+
+  const entriesCorrection = (
+    removePrefix: (str: string) => string,
+    entries: Record<string, [string, string]>[],
+    target?: string
+  ) => {
+    if (entries.length <= 1) return entries;
+    return _.map(entries, (entry, index) =>
+      _.mapValues(entry, (value, key) =>
+        !target || key === target ? [removePrefix(value[0]), value[1]] : value
+      ),
+    );
+  };
+
   function valuesCorrection(stats: any): void {
     _.update(stats, PATHS.ACTION_POINTS, nonNegative);
     _.update(stats, PATHS.EXCITEMENT, nonNegative);
     _.update(stats, PATHS.DESIRE, nonNegative);
+    _.update(stats, PATHS.CASE_NAME, removeHashPrefix);
+    _.update(stats, PATHS.CASE_LOCATION, removeHashPrefix);
+    _.update(stats, PATHS.NORMALIZATION, (entries: any) => entriesCorrection(removeHashPrefix, entries));
     _.update(stats, PATHS.OUT_OF_CONTROL, nonNegative);
+    _.update(stats, PATHS.GENERATED_ABILITIES, (abilities: any) =>
+      entriesCorrection(removePrefixDescriptions, abilities, 'ability_description')
+    );
     resetPassiveSkills(stats);
   }
 
@@ -204,8 +232,9 @@ $(() => {
         const daily_ap = last_message_id <= 1 ? 3 : 5;
         statDataUpdate(variables, daily_ap);
         console.log('后台状态更新已成功应用。');
+      } else {
+        valuesCorrection(variables);
       }
-      valuesCorrection(variables);
     } catch (e) {
       console.error('脚本错误:', e);
     }
