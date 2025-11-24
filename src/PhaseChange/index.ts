@@ -192,13 +192,11 @@ $(() => {
   const entriesCorrection = (
     removePrefix: (str: string) => string,
     entries: Record<string, [string, string]>[],
-    target?: string
+    target?: string,
   ) => {
     if (entries.length <= 1) return entries;
     return _.map(entries, (entry, index) =>
-      _.mapValues(entry, (value, key) =>
-        !target || key === target ? [removePrefix(value[0]), value[1]] : value
-      ),
+      _.mapValues(entry, (value, key) => (!target || key === target ? [removePrefix(value[0]), value[1]] : value)),
     );
   };
 
@@ -211,7 +209,7 @@ $(() => {
     _.update(stats, PATHS.NORMALIZATION, (entries: any) => entriesCorrection(removeHashPrefix, entries));
     _.update(stats, PATHS.OUT_OF_CONTROL, nonNegative);
     _.update(stats, PATHS.GENERATED_ABILITIES, (abilities: any) =>
-      entriesCorrection(removePrefixDescriptions, abilities, 'ability_description')
+      entriesCorrection(removePrefixDescriptions, abilities, 'ability_description'),
     );
     resetPassiveSkills(stats);
   }
