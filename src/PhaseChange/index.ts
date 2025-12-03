@@ -9,7 +9,6 @@ $(() => {
     EXCITEMENT: 'stat_data.user.sex_statue.body_excitement[0]',
     DESIRE: 'stat_data.user.sex_statue.spiritual_desire[0]',
     ABILITIES: 'stat_data.user.special_abilities[0]',
-    SOLVED_CASES_COUNT: 'stat_data.user.profile.solved_cases_count[0]',
     // world
     CASE_NAME: 'stat_data.world.current_case.case_name[0]',
     CASE_LOCATION: 'stat_data.world.current_case.case_location[0]',
@@ -21,6 +20,7 @@ $(() => {
     EXPERIENCE: 'stat_data.latent_variables.ejs_index.experience[0]',
     CANDIDATE_QUALITIES: 'stat_data.latent_variables.ability_update.candidate_ability_qualities[0]',
     GENERATED_ABILITIES: 'stat_data.latent_variables.ability_update.generated_abilities[0]',
+    SOLVED_CASES_COUNT: 'stat_data.latent_variables.solved_cases_count[0]',
   } as const;
 
   const CHAT_PATHS = {

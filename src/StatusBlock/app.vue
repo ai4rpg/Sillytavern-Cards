@@ -78,12 +78,8 @@
           <span class="hud-value hud-location-text">{{ _.get(statData, 'user.location[0]', '未知地点') }}</span>
         </div>
         <div class="hud-data-item">
-          <span class="hud-label">身份:</span>
-          <span class="hud-value">{{ _.get(statData, 'user.profile.past_identity[0]', '未知过往') }}</span>
-        </div>
-        <div class="hud-data-item">
           <span class="hud-label">侦破案件数:</span>
-          <span class="hud-value">{{ _.get(statData, 'user.profile.solved_cases_count[0]', 0) }}</span>
+          <span class="hud-value">{{ _.get(statData, 'latent_variables.solved_cases_count[0]', 0) }}</span>
         </div>
       </div>
     </div>
@@ -226,7 +222,7 @@ const normalizationEntries = computed(() => {
 }
 
 #detective-hud-root {
-  background: linear-gradient(145deg, var(--bg-dark), var(--bg-panel));
+  background: linear-gradient(145deg, rgba(42, 10, 58, 0.9), rgba(42, 10, 58, 0.5));
   border: 1px solid var(--border-color);
   border-radius: 8px;
   padding: 18px;

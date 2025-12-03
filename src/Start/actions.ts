@@ -61,10 +61,10 @@ export async function createStart(selections: {
 
   const chatData = getVariables({ type: 'chat' });
 
-  _.set(chosenStatData, PATHS.IDENTITY, livelihood);
-  _.set(chosenStatData, PATHS.BLESSING, god);
-  _.set(chosenStatData, PATHS.HOME, district);
-  _.set(chosenStatData, PATHS.RESISTANCE, resistance);
+  _.set(chatData, PATHS.IDENTITY, livelihood);
+  _.set(chatData, PATHS.BLESSING, god);
+  _.set(chatData, PATHS.HOME, district);
+  _.set(chatData, PATHS.RESISTANCE, resistance);
   _.set(chatData, PATHS.DAILY_AP, daily_ap);
 
   replaceVariables(chatData, { type: 'chat' });
