@@ -61,6 +61,8 @@
 import { onMounted, ref } from 'vue';
 import { selectAbility } from './actions';
 
+import { getQualityColor } from '../StatusBlock/getQualityColor';
+
 const isSelecting = ref(false);
 const originalAbilities = ref<any[]>([]);
 
@@ -97,21 +99,6 @@ const handleSelect = async (index: number) => {
   isSelecting.value = true;
   await selectAbility(originalAbilities.value[index]);
 };
-
-function getQualityColor(quality: string): string {
-  switch (quality) {
-    case '普通':
-      return 'var(--text-dim)';
-    case '稀有':
-      return 'var(--aq-green)';
-    case '史诗':
-      return 'var(--aq-orange)';
-    case '传说':
-      return 'var(--aq-gold)';
-    default:
-      return 'var(--text-light)';
-  }
-}
 
 /**
  * The AI returns ability properties as an array, where the first element is the value

@@ -75,6 +75,22 @@
       </div>
     </div>
 
+    <div class="hud-block">
+      <h3 class="hud-block-title">行动模式</h3>
+      <div class="input-group">
+        <label for="daily-ap-input" class="input-label">日常阶段行动力</label>
+        <input
+          type="number"
+          id="daily-ap-input"
+          v-model.number="selections.daily_ap"
+          min="1"
+          class="numeric-input"
+          placeholder="输入正整数"
+        />
+        <div class="option-description">设置日常阶段的行动力点数。</div>
+      </div>
+    </div>
+
     <div class="confirm-button-container">
       <button class="confirm-button" :disabled="!allSelected || isConfirming" @click="handleConfirmation">
         {{ confirmButtonText }}
@@ -93,6 +109,7 @@ const selections = reactive({
   god: '',
   district: '',
   resistance: '',
+  daily_ap: 5,
 });
 
 const confirmButtonText = ref('这就是我了');
@@ -137,10 +154,16 @@ const resistanceOptions = [
 ];
 
 const allSelected = computed(() => {
-  return Object.values(selections).every(value => value !== '');
+  return (
+    selections.livelihood !== '' &&
+    selections.god !== '' &&
+    selections.district !== '' &&
+    selections.resistance !== '' &&
+    selections.daily_ap > 0
+  );
 });
 
-function selectOption(group: keyof typeof selections, value: string) {
+function selectOption(group: keyof Omit<typeof selections, 'daily_ap'>, value: string) {
   selections[group] = value;
 }
 
@@ -342,6 +365,37 @@ body {
   color: #555;
   cursor: not-allowed;
   text-shadow: none;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.input-label {
+  font-weight: 500;
+  color: var(--text-light);
+  font-size: 1em;
+}
+
+.numeric-input {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(0, 255, 255, 0.3);
+  color: var(--text-light);
+  padding: 10px;
+  border-radius: 4px;
+  font-family: var(--font-main);
+  font-size: 1em;
+  width: 100%;
+  max-width: 200px;
+  transition: all 0.3s ease;
+}
+
+.numeric-input:focus {
+  outline: none;
+  border-color: var(--detective-cyan);
+  box-shadow: var(--cyan-glow);
 }
 
 /* --- 移动端适配核心代码 --- */

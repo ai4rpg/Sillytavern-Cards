@@ -9,7 +9,6 @@ $(() => {
     EXCITEMENT: 'stat_data.user.sex_statue.body_excitement[0]',
     DESIRE: 'stat_data.user.sex_statue.spiritual_desire[0]',
     ABILITIES: 'stat_data.user.special_abilities[0]',
-    BLESSING: 'stat_data.user.profile.bless_old_gods[0]',
     SOLVED_CASES_COUNT: 'stat_data.user.profile.solved_cases_count[0]',
     // world
     CASE_NAME: 'stat_data.world.current_case.case_name[0]',
@@ -24,6 +23,15 @@ $(() => {
     GENERATED_ABILITIES: 'stat_data.latent_variables.ability_update.generated_abilities[0]',
   } as const;
 
+  const CHAT_PATHS = {
+    BLESSING: 'start_settings.profile.bless_old_gods',
+    DAILY_AP: 'start_settings.daily_ap',
+  } as const;
+
+  const chat_variables = getVariables({ type: 'chat' });
+  const blessing: string | undefined = _.get(chat_variables, CHAT_PATHS.BLESSING);
+  const daily_ap: number = _.get(chat_variables, CHAT_PATHS.DAILY_AP, 5);
+
   // ===================================================================
   // 核心逻辑函数模块
   // ===================================================================
@@ -33,8 +41,6 @@ $(() => {
    * @param {number} bias - 随机池偏移。
    */
   function initializeAbilityQualities(stats: any, bias: number = 0): void {
-    const blessing: string | undefined = _.get(stats, PATHS.BLESSING);
-
     const DEFAULT_BIAS_MAP: Record<string, number> = { Bast: 0, Hypnos: 0, Nodens: 0 };
     const BIAS_MAP: Record<string, Record<string, number>> = {
       猫的庇护: { ...DEFAULT_BIAS_MAP, Bast: 5 },
@@ -195,7 +201,7 @@ $(() => {
     target?: string,
   ) => {
     if (entries.length <= 1) return entries;
-    return _.map(entries, (entry, index) =>
+    return _.map(entries, entry =>
       _.mapValues(entry, (value, key) => (!target || key === target ? [removePrefix(value[0]), value[1]] : value)),
     );
   };
@@ -227,8 +233,8 @@ $(() => {
       }
       const role = messages[0].role;
       if (role === 'user') {
-        const daily_ap = last_message_id <= 1 ? 3 : 5;
-        statDataUpdate(variables, daily_ap);
+        const daily_ap_final = last_message_id <= 1 ? daily_ap - 1 : daily_ap;
+        statDataUpdate(variables, daily_ap_final);
         console.log('后台状态更新已成功应用。');
       } else {
         valuesCorrection(variables);

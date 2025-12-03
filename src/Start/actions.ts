@@ -2,13 +2,13 @@ import _ from 'lodash';
 import abilitiesDB from './AbilitiesDB.json' assert { type: 'json' };
 
 const PATHS = {
-  RESISTANCE: 'user.sex_statue.lust_resistance[0]',
   ABILITIES: 'user.special_abilities[0]',
-  IDENTITY: 'user.profile.past_identity[0]',
-  BLESSING: 'user.profile.bless_old_gods[0]',
-  HOME: 'user.profile.home[0]',
   PHASE_CHANGED: 'latent_variables.ejs_index.phase_changed[0]',
-  OPTION_DB: 'latent_variables.opening_options_db',
+  IDENTITY: 'start_settings.profile.past_identity',
+  BLESSING: 'start_settings.profile.bless_old_gods',
+  HOME: 'start_settings.profile.home',
+  DAILY_AP: 'start_settings.daily_ap',
+  RESISTANCE: 'start_settings.lust_resistance',
 };
 
 export async function createStart(selections: {
@@ -16,6 +16,7 @@ export async function createStart(selections: {
   god: string;
   district: string;
   resistance: string;
+  daily_ap: number;
 }) {
   if (
     typeof Mvu === 'undefined' ||
@@ -39,7 +40,7 @@ export async function createStart(selections: {
   const chosenStatData = initialData.stat_data;
 
   const abilitiesToAdd: string[] = [];
-  const { livelihood, god, district, resistance } = selections;
+  const { livelihood, god, district, resistance, daily_ap } = selections;
 
   const resistanceAbility = (abilitiesDB.resistance as Record<string, any>)[resistance];
   if (resistanceAbility) {
@@ -52,15 +53,21 @@ export async function createStart(selections: {
     abilitiesToAdd.push(...abilities);
   }
 
-  _.set(chosenStatData, PATHS.IDENTITY, livelihood);
-  _.set(chosenStatData, PATHS.BLESSING, god);
-  _.set(chosenStatData, PATHS.HOME, district);
-  _.set(chosenStatData, PATHS.RESISTANCE, resistance);
   _.set(chosenStatData, PATHS.ABILITIES, abilitiesToAdd);
   _.set(chosenStatData, PATHS.PHASE_CHANGED, 0);
   _.merge(initialData.stat_data, chosenStatData);
 
   replaceVariables(initialData, { type: 'message', message_id: 0 });
+
+  const chatData = getVariables({ type: 'chat' });
+
+  _.set(chosenStatData, PATHS.IDENTITY, livelihood);
+  _.set(chosenStatData, PATHS.BLESSING, god);
+  _.set(chosenStatData, PATHS.HOME, district);
+  _.set(chosenStatData, PATHS.RESISTANCE, resistance);
+  _.set(chatData, PATHS.DAILY_AP, daily_ap);
+
+  replaceVariables(chatData, { type: 'chat' });
 
   // 2. Generate the AI response
   const generatedResponse = await generate({ user_input: '' });
