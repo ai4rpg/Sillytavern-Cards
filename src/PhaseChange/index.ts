@@ -1,3 +1,6 @@
+import _ from 'lodash';
+import { getSettings, replaceSettings } from './settings';
+
 $(() => {
   // ===================================================================
   // 集中管理所有变量路径，提升代码的可读性、健壮性与可维护性。
@@ -24,13 +27,15 @@ $(() => {
   } as const;
 
   const CHAT_PATHS = {
-    BLESSING: 'start_settings.profile.bless_old_gods',
-    DAILY_AP: 'start_settings.daily_ap',
+    BLESSING: 'settings.profile.bless_old_gods',
+    DAILY_AP: 'settings.daily_ap',
+    ENDLESS_MODE: 'settings.endless_mode',
+    STORY_ENDED: 'story_ended',
   } as const;
 
   const chat_variables = getVariables({ type: 'chat' });
-  const blessing: string | undefined = _.get(chat_variables, CHAT_PATHS.BLESSING);
-  const daily_ap: number = _.get(chat_variables, CHAT_PATHS.DAILY_AP, 5);
+
+  const settings = getSettings();
 
   // ===================================================================
   // 核心逻辑函数模块
@@ -41,6 +46,7 @@ $(() => {
    * @param {number} bias - 随机池偏移。
    */
   function initializeAbilityQualities(stats: any, bias: number = 0): void {
+    const blessing: string | undefined = _.get(chat_variables, CHAT_PATHS.BLESSING);
     const DEFAULT_BIAS_MAP: Record<string, number> = { Bast: 0, Hypnos: 0, Nodens: 0 };
     const BIAS_MAP: Record<string, Record<string, number>> = {
       猫的庇护: { ...DEFAULT_BIAS_MAP, Bast: 5 },
@@ -51,10 +57,10 @@ $(() => {
     const BLESSING_BIASES = (blessing && BIAS_MAP[blessing]) || DEFAULT_BIAS_MAP;
 
     const ABILITY_QUALITIES_WEIGHTED = [
-      ...Array(27).fill('普通'),
-      ...Array(9).fill('稀有'),
-      ...Array(3).fill('史诗'),
-      '传说',
+      ...Array(54).fill('普通'),
+      ...Array(18).fill('稀有'),
+      ...Array(6).fill('史诗'),
+      ...Array(2).fill('传说'),
     ];
     _.update(stats, PATHS.CANDIDATE_QUALITIES, (candidates: Record<string, [string, string]>) =>
       _.mapValues(candidates, (value, key) => {
@@ -73,7 +79,7 @@ $(() => {
    * @param {number} bias - 难度偏移。
    */
   function initializeCase(stats: any, bias: number): void {
-    const difficulty_class = Math.max(1, Math.floor((Math.random() * 5 + bias + 2) / 3));
+    const difficulty_class = Math.max(1, Math.floor((Math.random() * (16 + bias) + 2 * bias + 7) / 10));
     _.set(stats, PATHS.DIFFICULTY_CLASS, difficulty_class);
     _.set(stats, PATHS.ACTION_POINTS, difficulty_class * 5 + 5);
     _.set(stats, PATHS.OUT_OF_CONTROL, 50);
@@ -88,38 +94,30 @@ $(() => {
     _.set(stats, PATHS.OUT_OF_CONTROL, 0);
   }
 
-  /** 重置所有非被动技能的使用状态。*/
-  function resetActiveSkills(stats: any): void {
+  /**
+   * 重置指定类型的技能使用状态。
+   * @param {any} stats - stat_data 对象。
+   * @param {boolean} is_passive - 如果为 true，重置被动技能；如果为 false，重置主动技能。
+   */
+  function resetSkills(stats: any, is_passive: boolean): void {
     const abilities: any[] = _.get(stats, PATHS.ABILITIES, []);
     let resetCount = 0;
     abilities.forEach(ability => {
-      if (ability && _.get(ability, 'is_passive[0]') === false && _.get(ability, 'is_used[0]') === true) {
+      const ability_is_passive = _.get(ability, 'is_passive[0]');
+      if (ability && ability_is_passive !== undefined && ability_is_passive === is_passive && _.get(ability, 'is_used[0]') === true) {
         _.set(ability, 'is_used[0]', false);
         resetCount++;
       }
     });
     if (resetCount > 0) {
-      console.log(`已成功重置 ${resetCount} 个主动技能的使用状态。`);
-    }
-  }
-
-  /** 重置所有被动技能的使用状态。*/
-  function resetPassiveSkills(stats: any): void {
-    const abilities: any[] = _.get(stats, PATHS.ABILITIES, []);
-    let resetCount = 0;
-    abilities.forEach(ability => {
-      if (ability && _.get(ability, 'is_passive[0]') === true && _.get(ability, 'is_used[0]') === true) {
-        _.set(ability, 'is_used[0]', false);
-        resetCount++;
-      }
-    });
-    if (resetCount > 0) {
-      console.log(`已成功修正 ${resetCount} 个被动技能的使用状态。`);
+      const type = is_passive === true ? '被动' : '主动';
+      console.log(`已成功重置 ${resetCount} 个 ${type} 技能的使用状态。`);
     }
   }
 
   /** 根据当前阶段决定是否需要计算新的 phase_changed **/
   function changedIndexUpdate(stats: any): void {
+    const story_ended = _.get(chat_variables, CHAT_PATHS.STORY_ENDED);
     const current_phase: string = _.get(stats, PATHS.CURRENT_PHASE);
     let action_points: number = _.get(stats, PATHS.ACTION_POINTS);
     const out_of_control: number = _.get(stats, PATHS.OUT_OF_CONTROL);
@@ -128,15 +126,22 @@ $(() => {
       侦破阶段: () => (out_of_control <= 0 ? 3 : action_points <= 0 || out_of_control >= 100 ? 4 : -1),
     };
 
+    let phase_changed: number = _.get(stats, PATHS.PHASE_CHANGED);
+
     if (current_phase === '日常阶段') {
       action_points -= 1;
       _.set(stats, PATHS.ACTION_POINTS, action_points);
       _.update(stats, PATHS.GENERATED_ABILITIES, abilities =>
         abilities.isArray && abilities.length === 0 ? abilities : [],
       );
+      if (story_ended && phase_changed === -1) {
+        _.set(stats, PATHS.PHASE_CHANGED, -1);
+        _.set(settings, 'enableStatDataUpdate', false);
+        replaceSettings(settings);
+        console.log('故事结束，不再生成新案件。');
+        return;
+      }
     }
-
-    let phase_changed: number = _.get(stats, PATHS.PHASE_CHANGED);
 
     if (phase_changed === 0) {
       phase_changed = 1;
@@ -153,14 +158,15 @@ $(() => {
   }
 
   function statDataUpdate(stats: any, daily_ap: number): void {
+    const endless_mode = _.get(chat_variables, CHAT_PATHS.ENDLESS_MODE);
     const difficulty_class: number = _.get(stats, PATHS.DIFFICULTY_CLASS);
     const experience: number = _.get(stats, PATHS.EXPERIENCE);
     const LEVEL_RULE = (expr: number): number => {
-      for (let i = 0; i < 5; i++) {
-        expr -= i * 3;
+      for (let i = 0; i < 10; i++) {
+        expr -= i;
         if (expr <= 0) return i;
       }
-      return 5;
+      return 12;
     };
 
     changedIndexUpdate(stats);
@@ -175,11 +181,16 @@ $(() => {
       initializeCase(stats, level);
       _.set(stats, PATHS.CURRENT_PHASE, '侦破阶段');
     } else if (phase_changed >= 3) {
-      resetActiveSkills(stats);
-      _.update(stats, PATHS.SOLVED_CASES_COUNT, (count: number) => count + 4 - phase_changed);
+      resetSkills(stats, false);
       _.update(stats, PATHS.EXPERIENCE, (expr: number) => expr + difficulty_class * (9 - phase_changed * 2)) + 3;
       _.set(stats, PATHS.CURRENT_PHASE, '后日谈阶段');
       _.set(stats, PATHS.ACTION_POINTS, 1);
+      if (phase_changed === 3) {
+        _.update(stats, PATHS.SOLVED_CASES_COUNT, (count: number) => count + 1);
+        if (!endless_mode && difficulty_class === 5) {
+          _.set(chat_variables, CHAT_PATHS.STORY_ENDED, true);
+        }
+      }
     }
   }
 
@@ -217,7 +228,7 @@ $(() => {
     _.update(stats, PATHS.GENERATED_ABILITIES, (abilities: any) =>
       entriesCorrection(removePrefixDescriptions, abilities, 'ability_description'),
     );
-    resetPassiveSkills(stats);
+    resetSkills(stats, true);
   }
 
   // ===================================================================
@@ -232,7 +243,8 @@ $(() => {
         return;
       }
       const role = messages[0].role;
-      if (role === 'user') {
+      if (role === 'user' && settings.enableStatDataUpdate) {
+        const daily_ap: number = _.get(chat_variables, CHAT_PATHS.DAILY_AP, 5);
         const daily_ap_final = last_message_id <= 1 ? daily_ap - 1 : daily_ap;
         statDataUpdate(variables, daily_ap_final);
         console.log('后台状态更新已成功应用。');

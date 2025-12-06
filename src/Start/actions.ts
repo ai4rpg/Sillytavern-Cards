@@ -4,27 +4,36 @@ import abilitiesDB from './AbilitiesDB.json' assert { type: 'json' };
 const PATHS = {
   ABILITIES: 'user.special_abilities[0]',
   PHASE_CHANGED: 'latent_variables.ejs_index.phase_changed[0]',
-  IDENTITY: 'start_settings.profile.past_identity',
-  BLESSING: 'start_settings.profile.bless_old_gods',
-  HOME: 'start_settings.profile.home',
-  DAILY_AP: 'start_settings.daily_ap',
-  RESISTANCE: 'start_settings.lust_resistance',
 };
 
-export async function createStart(selections: {
+const CHAT_PATHS = {
+  GENDER: 'settings.profile.gender',
+  IDENTITY: 'settings.profile.past_identity',
+  BLESSING: 'settings.profile.bless_old_gods',
+  HOME: 'settings.profile.home',
+  RESISTANCE: 'settings.profile.lust_resistance',
+  DAILY_AP: 'settings.daily_ap',
+  ENDLESS_MODE: 'settings.endless_mode',
+};
+
+export interface Selections {
+  gender: string;
   livelihood: string;
   god: string;
   district: string;
   resistance: string;
   daily_ap: number;
-}) {
+  endless_mode: boolean;
+}
+
+export async function createStart(selections: Selections) {
   if (
     typeof Mvu === 'undefined' ||
     typeof generate !== 'function' ||
     typeof getChatMessages !== 'function' ||
     typeof setChatMessages !== 'function' ||
     typeof getLastMessageId !== 'function' ||
-    typeof updateVariablesWith !== 'function'
+    typeof replaceVariables !== 'function'
   ) {
     throw new Error('无法访问酒馆助手核心API。请确保酒馆助手 (Tavern Helper) 已安装并正确加载。');
   }
@@ -40,7 +49,7 @@ export async function createStart(selections: {
   const chosenStatData = initialData.stat_data;
 
   const abilitiesToAdd: string[] = [];
-  const { livelihood, god, district, resistance, daily_ap } = selections;
+  const { gender, livelihood, god, district, resistance, daily_ap, endless_mode } = selections;
 
   const resistanceAbility = (abilitiesDB.resistance as Record<string, any>)[resistance];
   if (resistanceAbility) {
@@ -61,11 +70,13 @@ export async function createStart(selections: {
 
   const chatData = getVariables({ type: 'chat' });
 
-  _.set(chatData, PATHS.IDENTITY, livelihood);
-  _.set(chatData, PATHS.BLESSING, god);
-  _.set(chatData, PATHS.HOME, district);
-  _.set(chatData, PATHS.RESISTANCE, resistance);
-  _.set(chatData, PATHS.DAILY_AP, daily_ap);
+  _.set(chatData, CHAT_PATHS.GENDER, gender);
+  _.set(chatData, CHAT_PATHS.IDENTITY, livelihood);
+  _.set(chatData, CHAT_PATHS.BLESSING, god);
+  _.set(chatData, CHAT_PATHS.HOME, district);
+  _.set(chatData, CHAT_PATHS.RESISTANCE, resistance);
+  _.set(chatData, CHAT_PATHS.DAILY_AP, daily_ap);
+  _.set(chatData, CHAT_PATHS.ENDLESS_MODE, endless_mode);
 
   replaceVariables(chatData, { type: 'chat' });
 

@@ -61,7 +61,7 @@
 import { onMounted, ref } from 'vue';
 import { selectAbility } from './actions';
 
-import { getQualityColor } from '../StatusBlock/getQualityColor';
+import { getQualityColor } from '../shared/utils/getQualityColor';
 
 const isSelecting = ref(false);
 const originalAbilities = ref<any[]>([]);
@@ -154,21 +154,7 @@ onMounted(async () => {
 </script>
 
 <style lang="scss">
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;500;700&family=Orbitron:wght@400;700&display=swap');
-
-:root {
-  --erotic-pink: #ff0077;
-  --detective-cyan: #00ffff;
-  --bg-dark: #10001a;
-  --bg-panel: #2a0a3a;
-  --border-color: rgba(255, 0, 119, 0.3);
-  --text-light: #f5f5f5;
-  --text-dim: #b0a0c0;
-  --aq-green: #44ff00;
-  --aq-orange: #ff8000;
-  --aq-gold: #ffcc00;
-  --font-main: 'Noto Sans SC', sans-serif;
-}
+@use '../shared/styles/common.scss';
 
 .hud-header {
   background-color: rgba(42, 10, 58, 0.3);
@@ -261,7 +247,7 @@ onMounted(async () => {
   white-space: pre-wrap;
 }
 
-@media (max-width: 800px) {
+@media (max-width: 768px) {
   .skill-upgrade-grid {
     grid-template-columns: 1fr;
     gap: 12px;

@@ -12,6 +12,22 @@
     </div>
 
     <div class="hud-block">
+      <h3 class="hud-block-title">你的性别</h3>
+      <div class="selection-grid" id="group-gender">
+        <div
+          v-for="option in genderOptions"
+          :key="option.value"
+          class="option-card"
+          :class="{ selected: selections.gender === option.value }"
+          @click="selectOption('gender', option.value)"
+        >
+          <div class="option-title">{{ option.title }}</div>
+          <div class="option-description">{{ option.description }}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hud-block">
       <h3 class="hud-block-title">你的过往</h3>
       <div class="selection-grid" id="group-livelihood">
         <div
@@ -77,17 +93,31 @@
 
     <div class="hud-block">
       <h3 class="hud-block-title">行动模式</h3>
-      <div class="input-group">
-        <label for="daily-ap-input" class="input-label">日常阶段行动力</label>
-        <input
-          type="number"
-          id="daily-ap-input"
-          v-model.number="selections.daily_ap"
-          min="1"
-          class="numeric-input"
-          placeholder="输入正整数"
-        />
-        <div class="option-description">设置日常阶段的行动力点数。</div>
+      <div class="action-modes-container">
+        <div class="input-group">
+          <label for="daily-ap-input" class="input-label">日常阶段回合数</label>
+          <input
+            type="number"
+            id="daily-ap-input"
+            v-model.number="selections.daily_ap"
+            min="1"
+            class="numeric-input"
+            placeholder="输入正整数"
+          />
+          <div class="option-description">设置日常阶段的对话轮次。</div>
+        </div>
+        <div class="input-group">
+          <label class="input-label">无尽模式</label>
+          <button
+            type="button"
+            class="toggle-button"
+            :class="{ active: selections.endless_mode }"
+            @click="selections.endless_mode = !selections.endless_mode"
+          >
+            {{ endlessModeText }}
+          </button>
+          <div class="option-description">是不断遭遇案件，还是在解决五级案件后结束？</div>
+        </div>
       </div>
     </div>
 
@@ -102,18 +132,27 @@
 <script setup lang="ts">
 import { computed, reactive, ref } from 'vue';
 
-import { createStart } from './actions';
+import { createStart, type Selections } from './actions';
 
-const selections = reactive({
+const selections = reactive<Selections>({
+  gender: '',
   livelihood: '',
   god: '',
   district: '',
   resistance: '',
   daily_ap: 5,
+  endless_mode: false,
 });
 
 const confirmButtonText = ref('这就是我了');
 const isConfirming = ref(false);
+
+const endlessModeText = computed(() => (selections.endless_mode ? '开启' : '关闭'));
+
+const genderOptions = [
+  { value: '男', title: '男性', description: '选择男性角色' },
+  { value: '女', title: '女性', description: '选择女性角色' },
+];
 
 const livelihoodOptions = [
   { value: '侦探', title: '侦探', description: '失去了特殊能力的侦探，又获得了新的能力' },
@@ -155,6 +194,7 @@ const resistanceOptions = [
 
 const allSelected = computed(() => {
   return (
+    selections.gender !== '' &&
     selections.livelihood !== '' &&
     selections.god !== '' &&
     selections.district !== '' &&
@@ -163,7 +203,9 @@ const allSelected = computed(() => {
   );
 });
 
-function selectOption(group: keyof Omit<typeof selections, 'daily_ap'>, value: string) {
+type SelectableGroups = Exclude<keyof Selections, 'daily_ap' | 'endless_mode'>;
+
+function selectOption(group: SelectableGroups, value: string) {
   selections[group] = value;
 }
 
@@ -183,23 +225,10 @@ async function handleConfirmation() {
 </script>
 
 <style lang="scss">
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;500;700&family=Orbitron:wght@400;700&display=swap');
-:root {
-  --erotic-pink: #ff0077;
-  --pink-glow: 0 0 8px rgba(255, 0, 119, 0.5);
-  --detective-cyan: #00ffff;
-  --cyan-glow: 0 0 8px rgba(0, 255, 255, 0.5);
-  --bg-dark: #10001a;
-  --bg-panel: #2a0a3a;
-  --border-color: rgba(255, 0, 119, 0.3);
-  --text-light: #f5f5f5;
-  --text-dim: #b0a0c0;
-  --font-main: 'Noto Sans SC', sans-serif;
-  --font-hud: 'Orbitron', sans-serif;
-}
+@use '../shared/styles/common.scss';
 
 body {
-  background-color: var(--bg-dark);
+  background-color: var(--bg-panel);
   color: var(--text-light);
   font-family: var(--font-main);
   display: flex;
@@ -396,6 +425,49 @@ body {
   outline: none;
   border-color: var(--detective-cyan);
   box-shadow: var(--cyan-glow);
+}
+
+.toggle-button {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(0, 255, 255, 0.3);
+  color: var(--text-light);
+  padding: 10px;
+  border-radius: 4px;
+  font-family: var(--font-main);
+  font-size: 1em;
+  width: 100%;
+  max-width: 200px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  text-align: left;
+}
+
+.toggle-button:hover {
+  border-color: var(--detective-cyan);
+}
+
+.toggle-button.active {
+  border-color: var(--erotic-pink);
+  background: rgba(255, 0, 119, 0.1);
+  color: var(--erotic-pink);
+}
+
+.action-modes-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+@media (min-width: 769px) {
+  .action-modes-container {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 20px;
+  }
+
+  .action-modes-container > .input-group {
+    flex: 1;
+  }
 }
 
 /* --- 移动端适配核心代码 --- */
