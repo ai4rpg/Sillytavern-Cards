@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import { getStatData } from '../shared/utils/getStatData';
 import abilitiesDB from './AbilitiesDB.json' assert { type: 'json' };
 
 const PATHS = {
@@ -28,7 +29,6 @@ export interface Selections {
 
 export async function createStart(selections: Selections) {
   if (
-    typeof Mvu === 'undefined' ||
     typeof generate !== 'function' ||
     typeof getChatMessages !== 'function' ||
     typeof setChatMessages !== 'function' ||
@@ -38,12 +38,11 @@ export async function createStart(selections: Selections) {
     throw new Error('无法访问酒馆助手核心API。请确保酒馆助手 (Tavern Helper) 已安装并正确加载。');
   }
 
-  await waitGlobalInitialized('Mvu');
-
   // 1. Prepare the data based on user selections
-  const initialData = Mvu.getMvuData({ type: 'message', message_id: 0 });
+  await waitGlobalInitialized('Mvu');
+  const initialData = await getStatData(0);
   if (!initialData || !initialData.stat_data) {
-    throw new Error('未在聊天变量中找到 stat_data。');
+    throw new Error('未在消息变量中找到 stat_data。');
   }
 
   const chosenStatData = initialData.stat_data;
@@ -84,13 +83,11 @@ export async function createStart(selections: Selections) {
   const generatedResponse = await generate({ user_input: '' });
 
   // 3. Get the newly created message
-  const latestMessage = getChatMessages(-1, { include_swipes: true })[0];
+  const latestMessage = await getChatMessages(-1, { include_swipes: true })[0];
 
   // 4. Prepare new swipes and their data
   const newSwipes = [...latestMessage.swipes, generatedResponse + '\n\n<StatusPlaceHolderImpl/>'];
-
   const newSwipeData = await Mvu.parseMessage(generatedResponse, initialData);
-
   const newSwipesData = [...latestMessage.swipes_data, newSwipeData ? newSwipeData : initialData];
 
   // 5. Update the message with the new swipe and data

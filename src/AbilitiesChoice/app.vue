@@ -3,158 +3,84 @@
     <h2 class="hud-block-title">[ 新的特殊能力 ]</h2>
     <div class="hud-phase">选择一个祝福</div>
   </div>
+  
   <div class="skill-upgrade-grid" :class="{ selecting: isSelecting }">
-    <div class="skill-card" id="bast" @click="handleSelect(0)">
+    <div 
+      v-for="(skill, index) in skills" 
+      :key="index"
+      class="skill-card" 
+      @click="handleSelect(index)"
+    >
       <div class="skill-card-header">
-        <h3 class="skill-title">{{ bast.ability_name }}</h3>
+        <h3 class="skill-title">{{ getValue(skill, 'ability_name', '未知能力') }}</h3>
         <div class="skill-meta">
-          <span class="skill-quality" :style="{ color: getQualityColor(bast.ability_quality) }">{{
-            bast.ability_quality
-          }}</span>
+          <span 
+            class="skill-quality" 
+            :style="{ color: getQualityColor(getValue(skill, 'ability_quality', '未知品质')) }"
+          >
+            {{ getValue(skill, 'ability_quality', '') }}
+          </span>
           <span
             class="skill-nature"
-            :style="{ color: bast.is_passive ? 'var(--detective-cyan)' : 'var(--erotic-pink)' }"
-            >{{ bast.is_passive ? '被动' : '主动' }}</span
+            :style="{ color: getValue(skill, 'is_passive', '') ? 'var(--detective-cyan)' : 'var(--erotic-pink)' }"
           >
+            {{ getValue(skill, 'is_passive', false) ? '被动' : '主动' }}
+          </span>
         </div>
       </div>
-      <div class="skill-card-body">{{ bast.ability_description }}</div>
-    </div>
-
-    <div class="skill-card" id="hypnos" @click="handleSelect(1)">
-      <div class="skill-card-header">
-        <h3 class="skill-title">{{ hypnos.ability_name }}</h3>
-        <div class="skill-meta">
-          <span class="skill-quality" :style="{ color: getQualityColor(hypnos.ability_quality) }">{{
-            hypnos.ability_quality
-          }}</span>
-          <span
-            class="skill-nature"
-            :style="{ color: hypnos.is_passive ? 'var(--detective-cyan)' : 'var(--erotic-pink)' }"
-            >{{ hypnos.is_passive ? '被动' : '主动' }}</span
-          >
-        </div>
-      </div>
-      <div class="skill-card-body">{{ hypnos.ability_description }}</div>
-    </div>
-
-    <div class="skill-card" id="nodens" @click="handleSelect(2)">
-      <div class="skill-card-header">
-        <h3 class="skill-title">{{ nodens.ability_name }}</h3>
-        <div class="skill-meta">
-          <span class="skill-quality" :style="{ color: getQualityColor(nodens.ability_quality) }">{{
-            nodens.ability_quality
-          }}</span>
-          <span
-            class="skill-nature"
-            :style="{ color: nodens.is_passive ? 'var(--detective-cyan)' : 'var(--erotic-pink)' }"
-            >{{ nodens.is_passive ? '被动' : '主动' }}</span
-          >
-        </div>
-      </div>
-      <div class="skill-card-body">{{ nodens.ability_description }}</div>
+      <div class="skill-card-body">{{ getValue(skill, 'ability_description', '描述缺失') }}</div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
+import { getQualityColor } from '../shared/utils/getQualityColor';
+import { getStatData, getValue } from '../shared/utils/getStatData';
 import { selectAbility } from './actions';
 
-import { getQualityColor } from '../shared/utils/getQualityColor';
-
 const isSelecting = ref(false);
-const originalAbilities = ref<any[]>([]);
-
-type Ability = {
-  ability_name: string;
-  ability_quality: string;
-  ability_description: string;
-  is_passive: boolean;
-};
-
-const bast = ref<Ability>({
-  ability_name: 'Loading...',
-  ability_quality: '',
-  ability_description: '',
-  is_passive: false,
-});
-
-const hypnos = ref<Ability>({
-  ability_name: 'Loading...',
-  ability_quality: '',
-  ability_description: '',
-  is_passive: false,
-});
-
-const nodens = ref<Ability>({
-  ability_name: 'Loading...',
-  ability_quality: '',
-  ability_description: '',
-  is_passive: false,
-});
+const skills = ref<any[]>([]);
 
 const handleSelect = async (index: number) => {
-  if (isSelecting.value) return;
+  if (isSelecting.value || !skills.value[index]) return;
   isSelecting.value = true;
-  await selectAbility(originalAbilities.value[index]);
+  await selectAbility(skills.value[index]);
 };
-
-/**
- * The AI returns ability properties as an array, where the first element is the value
- * and the second is an explanation. This function extracts the value.
- */
-function parseAbility(abilityData: any): Ability {
-  const parsed: { [key: string]: any } = {};
-  for (const key in abilityData) {
-    if (Object.prototype.hasOwnProperty.call(abilityData, key)) {
-      if (Array.isArray(abilityData[key]) && abilityData[key].length > 0) {
-        parsed[key] = abilityData[key][0];
-      } else {
-        parsed[key] = abilityData[key];
-      }
-    }
-  }
-  return parsed as Ability;
-}
 
 onMounted(async () => {
   try {
     const current_message_id = getCurrentMessageId();
     const last_message_id = getLastMessageId();
+
     if (current_message_id !== last_message_id) {
       isSelecting.value = true;
     }
+
     await waitGlobalInitialized('Mvu');
-    const mvuData = Mvu.getMvuData({ type: 'message', message_id: current_message_id });
-    if (!mvuData || !mvuData.stat_data) {
-      throw new Error('未在聊天变量中找到 stat_data。');
-    }
+    const statData = await getStatData(current_message_id, 'stat_data');
 
-    const generatedAbilities = mvuData?.stat_data?.latent_variables?.ability_update?.generated_abilities[0];
+    const generatedAbilities = getValue(statData, 'latent_variables.ability_update.generated_abilities', []);
 
-    if (generatedAbilities && Array.isArray(generatedAbilities) && generatedAbilities.length === 3) {
-      originalAbilities.value = generatedAbilities;
-      bast.value = parseAbility(generatedAbilities[0]);
-      hypnos.value = parseAbility(generatedAbilities[1]);
-      nodens.value = parseAbility(generatedAbilities[2]);
+    if (Array.isArray(generatedAbilities) && generatedAbilities.length > 0) {
+      skills.value = generatedAbilities;
     } else {
-      throw new Error('未能够正确获取 AI 生成的候选能力');
+      throw new Error('未能够正确获取候选能力');
     }
   } catch (error) {
     console.error('Failed to initialize AbilitiesChoice:', error);
-    bast.value.ability_name = 'Error';
-    bast.value.ability_description = String(error);
-    hypnos.value.ability_name = 'Error';
-    hypnos.value.ability_description = String(error);
-    nodens.value.ability_name = 'Error';
-    nodens.value.ability_description = String(error);
+    skills.value = [{
+      ability_name: 'Error',
+      ability_quality: 'N/A',
+      ability_description: String(error),
+      is_passive: false
+    }];
   }
 });
 </script>
 
 <style lang="scss">
-@use '../shared/styles/common.scss';
+@use 'shared/styles/common.scss';
 
 .hud-header {
   background-color: rgba(42, 10, 58, 0.3);
@@ -177,7 +103,7 @@ onMounted(async () => {
 
 .skill-upgrade-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(256px, 1fr));
   gap: 15px;
   margin-top: 15px;
 }

@@ -225,7 +225,7 @@ async function handleConfirmation() {
 </script>
 
 <style lang="scss">
-@use '../shared/styles/common.scss';
+@use 'shared/styles/common.scss';
 
 body {
   background-color: var(--bg-panel);

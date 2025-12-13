@@ -1,12 +1,10 @@
 import { isEqual, merge } from 'lodash';
+import { getStatData } from '../shared/utils/getStatData';
 
 export async function selectAbility(ability: any) {
   try {
     await waitGlobalInitialized('Mvu');
-    const mvuData = Mvu.getMvuData({ type: 'message', message_id: 'latest' });
-    if (!mvuData || !mvuData.stat_data) {
-      throw new Error('未在聊天变量中找到 stat_data。');
-    }
+    const mvuData = await getStatData(getLastMessageId());
 
     if (!isEqual(ability.is_used, [false, ''])) {
       ability.is_used = [false, ''];

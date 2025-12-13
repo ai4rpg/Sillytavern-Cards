@@ -1,85 +1,79 @@
 <template>
   <div v-if="error" class="error-message">{{ error }}</div>
-  <div v-else-if="statData" id="detective-hud-root">
+  <div v-else id="detective-hud-root">
     <div class="hud-header">
       <div class="hud-time-date">
-        <span>{{ _.get(statData, 'world.time[0]', '未知时间') }}</span> //
-        <span>{{ _.get(statData, 'world.date[0]', '未知日期') }}</span>
+        <span>{{ state.time }}</span> //
+        <span>{{ state.date }}</span>
       </div>
-      <div id="hud-phase" class="hud-phase">{{ _.get(statData, 'user.current_phase[0]', '未知阶段') }}</div>
+      <div id="hud-phase" class="hud-phase">{{ state.current_phase }}</div>
     </div>
     <div
       class="hud-grid"
       style="margin-top: 0"
-      v-if="_.get(statData, 'user.current_phase[0]', '未知阶段') !== '日常阶段'"
+      v-if="state.current_phase !== '日常阶段'"
     >
       <div class="hud-block">
         <h3 class="hud-block-title">[ 案件信息 // Case Info ]</h3>
         <div class="hud-data-item">
           <span class="hud-label">当前案件:</span
-          ><span class="hud-value">{{ _.get(statData, 'world.current_case.case_name[0]', '无') }}</span>
+          ><span class="hud-value">{{ state.case_name }}</span>
         </div>
         <div class="hud-data-item">
           <span class="hud-label">案件地点:</span
-          ><span class="hud-value hud-location-text">{{
-            _.get(statData, 'world.current_case.case_location[0]', '未知地点')
-          }}</span>
+          ><span class="hud-value hud-location-text">{{ state.case_location }}</span>
         </div>
         <div class="hud-data-item">
-          <span class="hud-label">等级:</span><span class="hud-value hud-case-level">{{ caseLevelText }}</span>
+          <span class="hud-label">等级:</span><span class="hud-value hud-case-level">{{ state.case_level }}</span>
         </div>
       </div>
       <div class="hud-block">
         <h3 class="hud-block-title">[ 侦探状态 // Detective ]</h3>
         <div class="hud-gauge-container">
           <div class="hud-label">剩余行动力 (AP)</div>
-          <progress :value="_.get(statData, 'user.action_points[0]', 0)" max="30"></progress>
-          <div class="hud-gauge-text">{{ _.get(statData, 'user.action_points[0]', 0) }} / 30</div>
+          <progress :value="state.action_points" max="30"></progress>
+          <div class="hud-gauge-text">{{ state.action_points }} / 30</div>
         </div>
       </div>
     </div>
-    <div
-      class="hud-block"
-      style="margin-top: 15px"
-      v-if="_.get(statData, 'user.current_phase[0]', '未知阶段') !== '日常阶段'"
-    >
+    <div class="hud-block" style="margin-top: 15px" v-if="state.current_phase !== '日常阶段'">
       <h3 class="hud-block-title" style="color: var(--erotic-pink)">[ 失控值 // Reality Distortion ]</h3>
       <div class="hud-gauge-container">
-        <progress :value="_.get(statData, 'world.current_case.out_of_control[0]', 0)" max="100"></progress>
-        <div class="hud-gauge-text">{{ _.get(statData, 'world.current_case.out_of_control[0]', 0) }} / 100</div>
+        <progress :value="state.out_of_control" max="100"></progress>
+        <div class="hud-gauge-text">{{ state.out_of_control }} / 100</div>
       </div>
     </div>
     <div class="hud-grid" style="margin-top: 15px">
       <div class="hud-block">
+        <h3 class="hud-block-title">[ 个人信息 // Personal Info ]</h3>
+        <div class="hud-data-item">
+          <span class="hud-label">地点:</span>
+          <span class="hud-value hud-location-text">{{ state.location }}</span>
+        </div>
+        <div class="hud-data-item">
+          <span class="hud-label">侦破案件数:</span>
+          <span class="hud-value">{{ state.solved_cases_count }}</span>
+        </div>
+      </div>
+      <div class="hud-block">
         <h3 class="hud-block-title" style="color: var(--erotic-pink)">[ 平然化条目 // Normalization ]</h3>
         <div class="hud-list">
-          <template v-if="normalizationEntries.length > 0">
+          <template v-if="state.normalization_entries.length > 0">
             <div
-              v-for="(entry, index) in normalizationEntries"
+              v-for="(entry, index) in state.normalization_entries"
               :key="index"
               class="hud-data-item"
               style="display: block; margin-bottom: 8px"
             >
               <span class="hud-label" style="color: var(--detective-cyan)">{{
-                _.get(entry, 'title[0]', '名称缺失')
+                getValue(entry, 'title', '名称缺失')
               }}</span>
               <span class="hud-value" style="white-space: pre-wrap; text-align: left; padding-left: 10px">{{
-                _.get(entry, 'description[0]', '影响未知')
+                getValue(entry, 'description', '影响未知')
               }}</span>
             </div>
           </template>
           <template v-else>无</template>
-        </div>
-      </div>
-      <div class="hud-block">
-        <h3 class="hud-block-title">[ 个人信息 // Personal Info ]</h3>
-        <div class="hud-data-item">
-          <span class="hud-label">地点:</span>
-          <span class="hud-value hud-location-text">{{ _.get(statData, 'user.location[0]', '未知地点') }}</span>
-        </div>
-        <div class="hud-data-item">
-          <span class="hud-label">侦破案件数:</span>
-          <span class="hud-value">{{ _.get(statData, 'latent_variables.solved_cases_count[0]', 0) }}</span>
         </div>
       </div>
     </div>
@@ -87,31 +81,31 @@
       <div class="hud-block">
         <h3 class="hud-block-title">[ 特殊能力 // Abilities ]</h3>
         <div class="hud-list">
-          <template v-if="specialAbilities.length > 0">
+          <template v-if="state.abilities.length > 0">
             <div
-              v-for="(ability, index) in specialAbilities"
+              v-for="(ability, index) in state.abilities"
               :key="index"
               class="hud-data-item"
               style="display: block; margin-bottom: 8px"
             >
               <span
                 class="hud-label"
-                :style="{ color: _.get(ability, 'is_used[0]', false) ? 'var(--text-dim)' : 'var(--text-light)' }"
+                :style="{ color: getValue(ability, 'is_used', false) ? 'var(--text-dim)' : 'var(--text-light)' }"
               >
-                {{ _.get(ability, 'is_used[0]', false) ? '[已使用]' : ''
-                }}{{ _.get(ability, 'ability_name[0]', '未知能力') }}
+                {{ getValue(ability, 'is_used', false) ? '[已使用]' : ''
+                }}{{ getValue(ability, 'ability_name', '未知能力') }}
               </span>
-              <span :style="{ color: getQualityColor(_.get(ability, 'ability_quality[0]', '品质不明')) }">{{
-                _.get(ability, 'ability_quality[0]', '品质不明')
+              <span :style="{ color: getQualityColor(getValue(ability, 'ability_quality', '品质不明')) }">{{
+                getValue(ability, 'ability_quality', '品质不明')
               }}</span>
               <span
                 :style="{
-                  color: _.get(ability, 'is_passive[0]', false) ? 'var(--detective-cyan)' : 'var(--erotic-pink)',
+                  color: getValue(ability, 'is_passive', false) ? 'var(--detective-cyan)' : 'var(--erotic-pink)',
                 }"
-                >{{ _.get(ability, 'is_passive[0]', false) ? '被动' : '主动' }}</span
+                >{{ getValue(ability, 'is_passive', false) ? '被动' : '主动' }}</span
               >
               <span class="hud-value" style="white-space: pre-wrap; text-align: left; padding-left: 10px">{{
-                _.get(ability, 'ability_description[0]', '描述缺失')
+                getValue(ability, 'ability_description', '描述缺失')
               }}</span>
             </div>
           </template>
@@ -122,61 +116,96 @@
         <h3 class="hud-block-title" style="color: var(--erotic-pink)">[ 性状态 // Sex Status ]</h3>
         <div class="hud-gauge-container">
           <div class="hud-label" style="font-size: 0.8rem">肉体兴奋</div>
-          <progress :value="_.get(statData, 'user.sex_statue.body_excitement[0]', 0)" max="100"></progress>
-          <div class="hud-gauge-text">{{ _.get(statData, 'user.sex_statue.body_excitement[0]', 0) }} / 100</div>
+          <progress :value="state.body_excitement" max="100"></progress>
+          <div class="hud-gauge-text">{{ state.body_excitement }} / 100</div>
         </div>
         <div class="hud-gauge-container">
           <div class="hud-label" style="font-size: 0.8rem">精神欲望</div>
-          <progress :value="_.get(statData, 'user.sex_statue.spiritual_desire[0]', 0)" max="100"></progress>
-          <div class="hud-gauge-text">{{ _.get(statData, 'user.sex_statue.spiritual_desire[0]', 0) }} / 100</div>
+          <progress :value="state.spiritual_desire" max="100"></progress>
+          <div class="hud-gauge-text">{{ state.spiritual_desire }} / 100</div>
         </div>
       </div>
     </div>
   </div>
-  <div v-else>Loading...</div>
 </template>
 
 <script setup lang="ts">
-import _ from 'lodash';
-import { computed, onMounted, ref } from 'vue';
-
+import { onMounted, ref } from 'vue';
 import { getQualityColor } from '../shared/utils/getQualityColor';
+import { getStatData, getValue } from '../shared/utils/getStatData';
 
-const statData = ref<any>(null);
+interface GameState {
+  time: string;
+  date: string;
+  current_phase: string;
+  case_name: string;
+  case_location: string;
+  location: string;
+  case_level: number;
+  action_points: number;
+  out_of_control: number;
+  body_excitement: number;
+  spiritual_desire: number;
+  solved_cases_count: number;
+  abilities: any[];
+  normalization_entries: any[];
+}
+
+const state = ref<GameState>({
+  time: '',
+  date: '',
+  current_phase: '',
+  case_name: '',
+  case_location: '',
+  location: '',
+  case_level: 0,
+  action_points: 0,
+  out_of_control: 0,
+  body_excitement: 0,
+  spiritual_desire: 0,
+  solved_cases_count: 0,
+  abilities: [],
+  normalization_entries: [],
+});
+
 const error = ref<string | null>(null);
+
+const getArrayValue = (data: any, path: string): any[] => {
+  const val = getValue(data, path, []);
+  return Array.isArray(val) ? val : [];
+};
 
 onMounted(async () => {
   try {
     await waitGlobalInitialized('Mvu');
-    const messages = getChatMessages(getCurrentMessageId());
-    if (!messages || messages.length === 0 || !messages[0].data || !messages[0].data.stat_data) {
-      throw new Error('无法加载状态数据。');
-    }
-    statData.value = messages[0].data.stat_data;
+    const current_message_id = getCurrentMessageId();
+    const statData = await getStatData(current_message_id, 'stat_data');
+
+    state.value = {
+      time: getValue(statData, 'world.time', '未知时间'),
+      date: getValue(statData, 'world.date', '未知时间'),
+      current_phase: getValue(statData, 'user.current_phase', '未知阶段'),
+      case_name: getValue(statData, 'world.current_case.case_name', '未知案件'),
+      case_location: getValue(statData, 'world.current_case.case_location', '未知地点'),
+      location: getValue(statData, 'user.location', '_未知地点'),
+      case_level: getValue(statData, 'user.case_level', 0),
+      action_points: getValue(statData, 'user.action_points', 0),
+      out_of_control: getValue(statData, 'user.out_of_control', 0),
+      body_excitement: getValue(statData, 'user.body_excitement', 0),
+      spiritual_desire: getValue(statData, 'user.spiritual_desire', 0),
+      solved_cases_count: getValue(statData, 'latent_variables.solved_cases_count', 0),
+      abilities: getArrayValue(statData, 'user.special_abilities'),
+      normalization_entries: getArrayValue(statData, 'world.normalization_entries'),
+    };
   } catch (e: any) {
-    error.value = `状态面板加载出错: ${e.message}`;
-    console.error(e);
+    error.value = `状态面板加载出错: ${e.message || '未知错误'}`;
+    console.error('Failed to load stat_data:', e);
   }
-});
-
-const caseLevelText = computed(() => {
-  const level = _.get(statData.value, 'world.current_case.difficulty_class[0]', '');
-  return level === 0 ? '' : level;
-});
-
-const specialAbilities = computed(() => {
-  const abilities = _.get(statData.value, 'user.special_abilities[0]', []);
-  return Array.isArray(abilities) ? abilities : [];
-});
-
-const normalizationEntries = computed(() => {
-  const entries = _.get(statData.value, 'world.normalization_entries[0]', []);
-  return Array.isArray(entries) ? entries : [];
 });
 </script>
 
 <style lang="scss">
-@use '../shared/styles/common.scss';
+@use 'shared/styles/common.scss';
 
 @keyframes ripple-effect {
   0% {
