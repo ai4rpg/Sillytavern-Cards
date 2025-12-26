@@ -217,7 +217,13 @@ async function handleConfirmation() {
   } catch (error: any) {
     console.error('角色创建失败:', error);
     confirmButtonText.value = '错误！请检查控制台';
-    alert(`角色创建失败！ 错误详情: ${error.message} 请检查浏览器控制台(F12)获取更多信息。`);
+    let errorMessage = '未知错误';
+    if (error instanceof Error) {
+      errorMessage = error.message;
+    } else {
+      errorMessage = JSON.stringify(error);
+    }
+    alert(`角色创建失败！ 错误详情: ${errorMessage} 请检查浏览器控制台(F12)获取更多信息。`);
   } finally {
     isConfirming.value = false;
   }

@@ -24,7 +24,7 @@
           ><span class="hud-value hud-location-text">{{ state.case_location }}</span>
         </div>
         <div class="hud-data-item">
-          <span class="hud-label">等级:</span><span class="hud-value hud-case-level">{{ state.case_level }}</span>
+          <span class="hud-label">等级:</span><span class="hud-value hud-case-level">{{ state.difficulty_class }}</span>
         </div>
       </div>
       <div class="hud-block">
@@ -141,7 +141,7 @@ interface GameState {
   case_name: string;
   case_location: string;
   location: string;
-  case_level: number;
+  difficulty_class: number;
   action_points: number;
   out_of_control: number;
   body_excitement: number;
@@ -158,7 +158,7 @@ const state = ref<GameState>({
   case_name: '',
   case_location: '',
   location: '',
-  case_level: 0,
+  difficulty_class: 0,
   action_points: 0,
   out_of_control: 0,
   body_excitement: 0,
@@ -187,10 +187,10 @@ onMounted(async () => {
       current_phase: getValue(statData, 'user.current_phase', '未知阶段'),
       case_name: getValue(statData, 'world.current_case.case_name', '未知案件'),
       case_location: getValue(statData, 'world.current_case.case_location', '未知地点'),
-      location: getValue(statData, 'user.location', '_未知地点'),
-      case_level: getValue(statData, 'user.case_level', 0),
+      location: getValue(statData, 'user.location', '未知地点'),
+      difficulty_class: getValue(statData, 'world.current_case.difficulty_class', 0),
+      out_of_control: getValue(statData, 'world.current_case.out_of_control', 0),
       action_points: getValue(statData, 'user.action_points', 0),
-      out_of_control: getValue(statData, 'user.out_of_control', 0),
       body_excitement: getValue(statData, 'user.body_excitement', 0),
       spiritual_desire: getValue(statData, 'user.spiritual_desire', 0),
       solved_cases_count: getValue(statData, 'latent_variables.solved_cases_count', 0),
@@ -235,7 +235,7 @@ onMounted(async () => {
 }
 
 #detective-hud-root {
-  background: linear-gradient(145deg, rgba(42, 10, 58, 0.9), rgba(42, 10, 58, 0.5));
+  background: linear-gradient(145deg, rgba(42, 10, 58, 0.9), rgba(42, 10, 58, 0.7));
   border: 1px solid var(--border-color);
   border-radius: 8px;
   padding: 18px;
